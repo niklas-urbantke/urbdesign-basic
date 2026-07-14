@@ -325,6 +325,15 @@
     overflow-x: auto;
     color: var(--color-text);
   }
+
+  /* Icon: einfarbig ueber currentColor, Groesse ueber --icon-size */
+  .icon {
+    width: var(--icon-size, 1.25rem);
+    height: var(--icon-size, 1.25rem);
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+  }
 }
 
 /* ---------------- Animationen ---------------- */

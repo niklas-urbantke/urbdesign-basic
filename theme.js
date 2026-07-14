@@ -12,7 +12,10 @@
     root.setAttribute("data-theme", theme);
     const btn = document.querySelector("[data-theme-toggle]");
     if (btn) {
-      btn.textContent = theme === "dark" ? "☀️ Hell" : "🌙 Dunkel";
+      // Icon (Mond im hellen, Sonne im dunklen Modus) plus Textlabel.
+      var icon = theme === "dark" ? "sun" : "moon";
+      var label = theme === "dark" ? "Hell" : "Dunkel";
+      btn.innerHTML = '<svg class="icon" style="--icon-size:18px" aria-hidden="true"><use href="#' + icon + '"></use></svg>' + label;
       btn.setAttribute("aria-label", theme === "dark" ? "Zu hellem Design wechseln" : "Zu dunklem Design wechseln");
     }
   }

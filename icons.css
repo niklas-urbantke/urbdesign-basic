@@ -6,14 +6,7 @@
 
 @layer showcase {
 
-  /* Basisklasse fuer Icons in der App */
-  .icon {
-    width: var(--icon-size, 24px);
-    height: var(--icon-size, 24px);
-    display: inline-block;
-    vertical-align: middle;
-    flex-shrink: 0;
-  }
+  /* Basisklasse .icon liegt in components.css (dort geladen). */
 
   /* Steuerleiste */
   .controls {
