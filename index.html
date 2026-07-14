@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Design System – Baukasten</title>
+
+  <!-- Schriften: Open Sans (Segoe-Alternative) + JetBrains Mono.
+       Faellt bei fehlendem Netz sauber auf System-Fonts zurueck. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Reihenfolge wichtig: erst Tokens, dann Komponenten, dann Showcase -->
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="components.css">
+  <link rel="stylesheet" href="showcase.css">
+</head>
+<body>
+
+  <!-- ---------- Kopfzeile ---------- -->
+  <header class="topbar glass">
+    <div class="topbar__brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      Claude Design System
+    </div>
+    <div class="topbar__actions">
+      <span class="badge badge--accent">v0.1</span>
+      <button class="btn" data-theme-toggle>🌙 Dunkel</button>
+    </div>
+  </header>
+
+  <main class="page">
+
+    <!-- ---------- Hero ---------- -->
+    <section class="hero">
+      <h1>Baukasten &amp; Style-Guide</h1>
+      <p>
+        Ein token-basiertes Design-System: violett-indigo Akzent, Light- und Dark-Theme,
+        ausgewogene Radien, leicht glasige Flächen. Alle Elemente stylen ausschließlich über
+        semantische Tokens, sodass ein Theme-Wechsel überall gleichzeitig wirkt.
+      </p>
+    </section>
+
+    <!-- ================= FARBEN ================= -->
+    <section class="section" id="farben">
+      <h2>Farben – Primitive</h2>
+      <p class="section__hint">Die reinen Rohwerte der Palette. Werden nie direkt in Komponenten verwendet.</p>
+
+      <h3 style="font-size:var(--text-base);color:var(--color-text-secondary);margin-bottom:var(--space-3)">Akzent (Violett-Indigo)</h3>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch__color" style="background:var(--urb-accent-50)"></div><div class="swatch__label"><b>50</b><span>#f2f0ff</span></div></div>
+        <div class="swatch"><div class="swatch__color" style="background:var(--urb-accent-100)"></div><div class="swatch__label"><b>100</b><span>#e6e2ff</span></div></div>
+        <div class="swatch"><div class="swatch__color" style="background:var(--urb-accent-200)"></div><div class="swatch__label"><b>200</b><span>#cfc7ff</span></div></div>
+        <div class="swatch"><div class="swatch__color" style="background:var(--urb-accent-300)"></div><div class="swatch__label"><b>300</b><span>#b0a3fc</span></div></div>
+        <div class="swatch"><div class="swatch__color" style="background:var(--urb-accent-400)"></div><div class="swatch__label"><b>400</b><span>#8f7cf7</span></div></div>
+        <div class="swatch"><div class="swatch__color" style="background:var(--urb-accent-500)"></div><div class="swatch__label"><b>500</b><span>#7359f0</span></div></div>
+        <div class="swatch"><div class="swatch__color" style="background:var(--urb-accent-600)"></div><div class="swatch__label"><b>600</b><span>#5f43e0</span></div></div>
+        <div class="swatch"><div class="swatch__color" style="background:var(--urb-accent-700)"></div><div class="swatch__label"><b>700</b><span>#4d34bd</span></div></div>
+        <div class="swatch"><div class="swatch__color" style="background:var(--urb-accent-800)"></div><div class="swatch__label"><b>800</b><span>#3f2c99</span></div></div>
+        <div class="swatch"><div class="swatch__color" style="background:var(--urb-accent-900)"></div><div class="swatch__label"><b>900</b><span>#342778</span></div></div>
+      </div>
+
+      <h3 style="font-size:var(--text-base);color:var(--color-text-secondary);margin:var(--space-6) 0 var(--space-3)">Neutral</h3>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch__color" style="background:var(--urb-neutral-50)"></div><div class="swatch__label"><b>50</b></div></div>
+        <div class="swatch"><div class="swatch__color" style="background:var(--urb-neutral-100)"></div><div class="swatch__label"><b>100</b></div></div>
+        <div class="swatch"><div class="swatch__color" style="background:var(--urb-neutral-200)"></div><div class="swatch__label"><b>200</b></div></div>
+        <div class="swatch"><div class="swatch__color" style="background:var(--urb-neutral-300)"></div><div class="swatch__label"><b>300</b></div></div>
+        <div class="swatch"><div class="swatch__color" style="background:var(--urb-neutral-400)"></div><div class="swatch__label"><b>400</b></div></div>
+        <div class="swatch"><div class="swatch__color" style="background:var(--urb-neutral-500)"></div><div class="swatch__label"><b>500</b></div></div>
+        <div class="swatch"><div class="swatch__color" style="background:var(--urb-neutral-600)"></div><div class="swatch__label"><b>600</b></div></div>
+        <div class="swatch"><div class="swatch__color" style="background:var(--urb-neutral-700)"></div><div class="swatch__label"><b>700</b></div></div>
+        <div class="swatch"><div class="swatch__color" style="background:var(--urb-neutral-800)"></div><div class="swatch__label"><b>800</b></div></div>
+        <div class="swatch"><div class="swatch__color" style="background:var(--urb-neutral-900)"></div><div class="swatch__label"><b>900</b></div></div>
+        <div class="swatch"><div class="swatch__color" style="background:var(--urb-neutral-950)"></div><div class="swatch__label"><b>950</b></div></div>
+      </div>
+
+      <h3 style="font-size:var(--text-base);color:var(--color-text-secondary);margin:var(--space-8) 0 var(--space-3)">Semantische Rollen</h3>
+      <p class="section__hint">Diese Tokens benutzen die Komponenten. Sie passen sich beim Theme-Wechsel an.</p>
+      <div class="roles">
+        <div class="role"><span class="dot" style="background:var(--color-bg)"></span>--color-bg</div>
+        <div class="role"><span class="dot" style="background:var(--color-surface)"></span>--color-surface</div>
+        <div class="role"><span class="dot" style="background:var(--color-surface-2)"></span>--color-surface-2</div>
+        <div class="role"><span class="dot" style="background:var(--color-text)"></span>--color-text</div>
+        <div class="role"><span class="dot" style="background:var(--color-text-secondary)"></span>--color-text-secondary</div>
+        <div class="role"><span class="dot" style="background:var(--color-border)"></span>--color-border</div>
+        <div class="role"><span class="dot" style="background:var(--color-accent)"></span>--color-accent</div>
+        <div class="role"><span class="dot" style="background:var(--color-success)"></span>--color-success</div>
+        <div class="role"><span class="dot" style="background:var(--color-warning)"></span>--color-warning</div>
+        <div class="role"><span class="dot" style="background:var(--color-danger)"></span>--color-danger</div>
+        <div class="role"><span class="dot" style="background:var(--color-info)"></span>--color-info</div>
+      </div>
+    </section>
+
+    <!-- ================= TYPOGRAFIE ================= -->
+    <section class="section" id="typografie">
+      <h2>Typografie</h2>
+      <p class="section__hint">Open Sans für Text, JetBrains Mono für Werte und Code.</p>
+      <div class="demo demo--col glass">
+        <div class="type-row"><span class="meta">3xl / 700</span><span style="font-size:var(--text-3xl);font-weight:var(--font-bold)">Überschrift groß</span></div>
+        <div class="type-row"><span class="meta">2xl / 600</span><span style="font-size:var(--text-2xl);font-weight:var(--font-semibold)">Abschnittstitel</span></div>
+        <div class="type-row"><span class="meta">xl / 600</span><span style="font-size:var(--text-xl);font-weight:var(--font-semibold)">Sektionstitel</span></div>
+        <div class="type-row"><span class="meta">lg / 500</span><span style="font-size:var(--text-lg);font-weight:var(--font-medium)">Hervorgehobener Text</span></div>
+        <div class="type-row"><span class="meta">base / 400</span><span style="font-size:var(--text-base)">Fließtext in Standardgröße für gute Lesbarkeit.</span></div>
+        <div class="type-row"><span class="meta">sm / 400</span><span style="font-size:var(--text-sm)">Sekundärer Text, Hilfetexte, Tabellen.</span></div>
+        <div class="type-row"><span class="meta">xs / 500</span><span style="font-size:var(--text-xs);font-weight:var(--font-medium)">Labels, Badges, Metadaten</span></div>
+        <div class="type-row"><span class="meta">mono</span><span style="font-family:var(--font-mono)">const tokens = getTokens();</span></div>
+      </div>
+    </section>
+
+    <!-- ================= ABSTÄNDE / RADIEN / SCHATTEN ================= -->
+    <section class="section" id="skalen">
+      <h2>Abstände, Radien &amp; Schatten</h2>
+      <div class="demo demo--col glass">
+        <div class="stack">
+          <div class="space-row"><span class="meta">--space-1 · 4px</span><span class="bar" style="width:4px"></span></div>
+          <div class="space-row"><span class="meta">--space-2 · 8px</span><span class="bar" style="width:8px"></span></div>
+          <div class="space-row"><span class="meta">--space-3 · 12px</span><span class="bar" style="width:12px"></span></div>
+          <div class="space-row"><span class="meta">--space-4 · 16px</span><span class="bar" style="width:16px"></span></div>
+          <div class="space-row"><span class="meta">--space-6 · 24px</span><span class="bar" style="width:24px"></span></div>
+          <div class="space-row"><span class="meta">--space-8 · 32px</span><span class="bar" style="width:32px"></span></div>
+          <div class="space-row"><span class="meta">--space-12 · 48px</span><span class="bar" style="width:48px"></span></div>
+          <div class="space-row"><span class="meta">--space-16 · 64px</span><span class="bar" style="width:64px"></span></div>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:var(--space-6)">
+        <div class="box-row">
+          <div class="box" style="border-radius:var(--radius-sm)">sm</div>
+          <div class="box" style="border-radius:var(--radius-md)">md</div>
+          <div class="box" style="border-radius:var(--radius-lg)">lg</div>
+          <div class="box" style="border-radius:var(--radius-xl)">xl</div>
+          <div class="box" style="border-radius:var(--radius-full);width:84px">full</div>
+        </div>
+      </div>
+      <div class="row" style="margin-top:var(--space-6)">
+        <div class="box-row">
+          <div class="box" style="box-shadow:var(--shadow-sm);border-radius:var(--radius-md)">shadow-sm</div>
+          <div class="box" style="box-shadow:var(--shadow-md);border-radius:var(--radius-md)">shadow-md</div>
+          <div class="box" style="box-shadow:var(--shadow-lg);border-radius:var(--radius-md)">shadow-lg</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= BUTTONS ================= -->
+    <section class="section" id="buttons">
+      <h2>Buttons</h2>
+      <p class="section__hint">Varianten, Größen und Zustände.</p>
+      <div class="demo glass">
+        <button class="btn btn--primary">Primär</button>
+        <button class="btn btn--secondary">Sekundär</button>
+        <button class="btn">Standard</button>
+        <button class="btn btn--ghost">Ghost</button>
+        <button class="btn btn--danger">Löschen</button>
+      </div>
+      <div class="demo glass">
+        <button class="btn btn--primary btn--sm">Klein</button>
+        <button class="btn btn--primary">Mittel</button>
+        <button class="btn btn--primary btn--lg">Groß</button>
+        <button class="btn btn--icon" aria-label="Hinzufügen">＋</button>
+        <button class="btn btn--primary is-loading">Lädt</button>
+        <button class="btn btn--primary" disabled>Deaktiviert</button>
+      </div>
+    </section>
+
+    <!-- ================= FORMULARE ================= -->
+    <section class="section" id="formulare">
+      <h2>Formularelemente</h2>
+      <div class="demo demo--grid glass">
+        <div class="field">
+          <label class="label" for="f1">Textfeld</label>
+          <input class="input" id="f1" placeholder="Platzhalter…">
+          <span class="help">Kurzer Hilfetext.</span>
+        </div>
+        <div class="field">
+          <label class="label" for="f2">Mit Fehler</label>
+          <input class="input input--error" id="f2" value="ungültig">
+          <span class="help help--error">Bitte prüfen.</span>
+        </div>
+        <div class="field">
+          <label class="label" for="f3">Auswahl</label>
+          <select class="select" id="f3">
+            <option>Option A</option><option>Option B</option><option>Option C</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="label" for="f4">Deaktiviert</label>
+          <input class="input" id="f4" value="gesperrt" disabled>
+        </div>
+        <div class="field" style="grid-column:1 / -1">
+          <label class="label" for="f5">Mehrzeilig</label>
+          <textarea class="textarea" id="f5" placeholder="Text…"></textarea>
+        </div>
+      </div>
+      <div class="demo glass">
+        <label class="checkbox"><input type="checkbox" checked> Checkbox</label>
+        <label class="radio"><input type="radio" name="r" checked> Radio A</label>
+        <label class="radio"><input type="radio" name="r"> Radio B</label>
+        <label class="switch"><input type="checkbox" checked><span class="switch__track"></span> Schalter</label>
+        <input class="range" type="range" value="60" style="max-width:200px">
+      </div>
+    </section>
+
+    <!-- ================= BADGES, TAGS, AVATARE ================= -->
+    <section class="section" id="marker">
+      <h2>Badges, Chips &amp; Avatare</h2>
+      <div class="demo glass">
+        <span class="badge">Neutral</span>
+        <span class="badge badge--accent">Akzent</span>
+        <span class="badge badge--success">Erfolg</span>
+        <span class="badge badge--warning">Warnung</span>
+        <span class="badge badge--danger">Fehler</span>
+        <span class="chip">Filter <button aria-label="Entfernen">✕</button></span>
+        <span class="chip">Tag <button aria-label="Entfernen">✕</button></span>
+      </div>
+      <div class="demo glass">
+        <span class="avatar">NU</span>
+        <span class="avatar" style="background:var(--color-success-soft);color:var(--color-success)">AB</span>
+        <div class="avatar-group">
+          <span class="avatar">A</span><span class="avatar">B</span><span class="avatar">C</span>
+          <span class="avatar" style="background:var(--color-surface-2);color:var(--color-text-secondary)">+3</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= HINWEISE ================= -->
+    <section class="section" id="alerts">
+      <h2>Hinweise</h2>
+      <div class="demo demo--col glass">
+        <div class="alert alert--info"><span class="alert__icon">ℹ️</span><div><div class="alert__title">Information</div><p>Neutrale Rückmeldung an den Nutzer.</p></div></div>
+        <div class="alert alert--success"><span class="alert__icon">✓</span><div><div class="alert__title">Erfolg</div><p>Die Aktion wurde ausgeführt.</p></div></div>
+        <div class="alert alert--warning"><span class="alert__icon">⚠️</span><div><div class="alert__title">Warnung</div><p>Bitte vor dem Fortfahren prüfen.</p></div></div>
+        <div class="alert alert--danger"><span class="alert__icon">✕</span><div><div class="alert__title">Fehler</div><p>Es ist ein Problem aufgetreten.</p></div></div>
+      </div>
+    </section>
+
+    <!-- ================= KARTEN ================= -->
+    <section class="section" id="karten">
+      <h2>Karten</h2>
+      <p class="section__hint">Normal (deckend) und in Glasoptik.</p>
+      <div class="demo demo--grid">
+        <div class="card">
+          <div class="card__header">Standard-Karte</div>
+          <div class="card__body"><p style="color:var(--color-text-secondary);font-size:var(--text-sm)">Deckende Fläche mit dezentem Schatten und Rahmen.</p></div>
+          <div class="card__footer"><button class="btn btn--ghost btn--sm">Abbrechen</button><button class="btn btn--primary btn--sm">Speichern</button></div>
+        </div>
+        <div class="card glass">
+          <div class="card__body">
+            <h3 style="margin-bottom:var(--space-2)">Glas-Karte</h3>
+            <p style="color:var(--color-text-secondary);font-size:var(--text-sm)">Transluzente Fläche mit Blur. Der Hintergrund scheint durch.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TABS ================= -->
+    <section class="section" id="tabs">
+      <h2>Tabs</h2>
+      <div class="demo demo--col glass">
+        <div class="tabs" role="tablist">
+          <button class="tab" role="tab" aria-selected="true">Übersicht</button>
+          <button class="tab" role="tab" aria-selected="false">Aktivität</button>
+          <button class="tab" role="tab" aria-selected="false">Einstellungen</button>
+        </div>
+        <p style="color:var(--color-text-secondary);font-size:var(--text-sm);padding-top:var(--space-3)">Inhalt des ausgewählten Tabs.</p>
+      </div>
+    </section>
+
+    <!-- ================= TABELLE ================= -->
+    <section class="section" id="tabelle">
+      <h2>Tabelle</h2>
+      <div class="card glass">
+        <table class="table">
+          <thead><tr><th>Plugin</th><th>Version</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>service-db</td><td>1.2.0</td><td><span class="badge badge--success">aktiv</span></td></tr>
+            <tr><td>service-auth</td><td>0.9.1</td><td><span class="badge badge--warning">Update</span></td></tr>
+            <tr><td>usage-downloader</td><td>2.0.0</td><td><span class="badge">inaktiv</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ================= FORTSCHRITT & FEEDBACK ================= -->
+    <section class="section" id="feedback">
+      <h2>Fortschritt &amp; Feedback</h2>
+      <div class="demo demo--col glass">
+        <div class="progress"><div class="progress__bar" style="width:64%"></div></div>
+        <div class="row">
+          <span class="spinner" aria-label="Lädt"></span>
+          <button class="btn tooltip" data-tooltip="Ich bin ein Tooltip">Hover für Tooltip</button>
+          <span>Tastenkürzel: <span class="kbd">Ctrl</span> <span class="kbd">K</span></span>
+        </div>
+        <nav class="breadcrumb"><a href="#">Start</a><span class="sep">/</span><a href="#">Plugins</a><span class="sep">/</span><span style="color:var(--color-text)">Details</span></nav>
+      </div>
+    </section>
+
+    <!-- ================= DIALOG ================= -->
+    <section class="section" id="dialog">
+      <h2>Dialog</h2>
+      <div class="modal-demo">
+        <div class="modal glass">
+          <h3 class="modal__title">Plugin entfernen?</h3>
+          <p style="color:var(--color-text-secondary);font-size:var(--text-sm)">Die Daten des Plugins bleiben im Datenordner erhalten.</p>
+          <div class="modal__actions">
+            <button class="btn btn--ghost">Abbrechen</button>
+            <button class="btn btn--danger">Entfernen</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CODE ================= -->
+    <section class="section" id="code">
+      <h2>Code</h2>
+      <pre class="code-block">.btn--primary {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}</pre>
+    </section>
+
+    <footer class="page-footer">
+      Claude Design System · token-basiert · Light &amp; Dark · Umschalter oben rechts
+    </footer>
+  </main>
+
+  <script src="theme.js"></script>
+</body>
+</html>
