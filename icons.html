@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>urbDesign Icons – Baukasten</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="components.css">
+  <link rel="stylesheet" href="showcase.css">
+  <link rel="stylesheet" href="icons.css">
+</head>
+<body>
+
+  <header class="topbar glass">
+    <div class="topbar__brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      urbDesign Icons
+    </div>
+    <div class="topbar__actions">
+      <span class="badge badge--accent" id="total-badge">0 Icons</span>
+      <button class="btn" data-theme-toggle>Dunkel</button>
+    </div>
+  </header>
+
+  <main class="page">
+
+    <section class="hero">
+      <h1>Icon-Baukasten</h1>
+      <p>
+        Einfarbige Linien-Icons im modernen, schlichten Stil. Alle nutzen
+        <code>currentColor</code>, sind also nicht fest eingefärbt – die Farbe
+        bestimmt das Design-System per <code>color</code> bzw. <code>var(--color-*)</code>.
+        Klick auf ein Icon kopiert den Einbau-Schnipsel.
+      </p>
+    </section>
+
+    <!-- Ladefehler-Hinweis (nur wenn Sprite nicht geladen werden konnte) -->
+    <div class="alert alert--warning load-note" id="load-note">
+      <span class="alert__icon">
+        <svg class="icon" style="--icon-size:20px"><use href="icons.svg#alert-triangle"></use></svg>
+      </span>
+      <div>
+        <div class="alert__title">Icons konnten nicht geladen werden</div>
+        <p>Diese Seite lädt <code>icons.svg</code> per Skript. Beim direkten Öffnen als
+        Datei blockieren manche Browser das. Bitte über einen lokalen Server öffnen,
+        z. B. <code>python -m http.server</code> im Ordner.</p>
+      </div>
+    </div>
+
+    <div class="controls glass">
+      <div class="field search">
+        <input class="input" id="icon-search" type="search" placeholder="Icon suchen … (z. B. pfeil, lock, plus)">
+      </div>
+      <label class="ctrl">Größe
+        <input class="range" id="size" type="range" min="16" max="48" step="2" value="24" style="width:120px">
+        <span id="size-val" style="font-family:var(--font-mono);width:2.5rem">24px</span>
+      </label>
+      <span class="count" id="count"></span>
+    </div>
+
+    <div id="grid-root"></div>
+    <p class="empty" id="empty" hidden>Keine Treffer.</p>
+
+    <footer class="page-footer">
+      urbDesign Icons · einfarbig (currentColor) · Sprite: <code>icons.svg</code>
+    </footer>
+  </main>
+
+  <!-- Container, in den das Sprite injiziert wird -->
+  <div id="sprite-host" hidden aria-hidden="true"></div>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <script src="theme.js"></script>
+  <script>
+    // Theme-Toggle-Label an dieser Seite ohne Emoji halten
+    (function () {
+      const btn = document.querySelector("[data-theme-toggle]");
+      const sync = () => { btn.textContent = document.documentElement.getAttribute("data-theme") === "dark" ? "Hell" : "Dunkel"; };
+      new MutationObserver(sync).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+      sync();
+    })();
+
+    // Sprite laden, Raster aufbauen
+    (async function () {
+      const host = document.getElementById("sprite-host");
+      const root = document.getElementById("grid-root");
+      const note = document.getElementById("load-note");
+
+      let text;
+      try {
+        const res = await fetch("icons.svg");
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        text = await res.text();
+      } catch (e) {
+        note.classList.add("is-visible");
+        return;
+      }
+
+      // XML-Prolog entfernen, damit innerHTML sauber parst
+      host.innerHTML = text.replace(/<\?xml[^>]*\?>/, "");
+
+      const symbols = Array.from(host.querySelectorAll("symbol"));
+      document.getElementById("total-badge").textContent = symbols.length + " Icons";
+
+      // Nach Kategorie gruppieren
+      const cats = {};
+      symbols.forEach((s) => {
+        const cat = s.getAttribute("data-cat") || "Sonstige";
+        (cats[cat] = cats[cat] || []).push(s.id);
+      });
+
+      // Raster rendern
+      const frag = document.createDocumentFragment();
+      Object.keys(cats).forEach((cat) => {
+        const sec = document.createElement("section");
+        sec.className = "cat";
+        sec.dataset.cat = cat;
+
+        const h = document.createElement("h2");
+        h.innerHTML = cat + ' <span class="cat-count">' + cats[cat].length + "</span>";
+        sec.appendChild(h);
+
+        const grid = document.createElement("div");
+        grid.className = "icon-grid";
+        cats[cat].forEach((id) => {
+          const tile = document.createElement("button");
+          tile.className = "icon-tile";
+          tile.dataset.name = id;
+          tile.title = "Klicken zum Kopieren";
+          // Anzeige ueber das injizierte lokale Symbol (zuverlaessig),
+          // der Kopier-Schnipsel verweist auf die externe Sprite-Datei.
+          tile.innerHTML =
+            '<svg class="icon"><use href="#' + id + '"></use></svg>' +
+            '<span class="name">' + id + "</span>";
+          grid.appendChild(tile);
+        });
+        sec.appendChild(grid);
+        frag.appendChild(sec);
+      });
+      root.appendChild(frag);
+
+      updateCount();
+    })();
+
+    // Groesse steuern
+    const sizeInput = document.getElementById("size");
+    const sizeVal = document.getElementById("size-val");
+    function applySize() {
+      document.documentElement.style.setProperty("--icon-size", sizeInput.value + "px");
+      sizeVal.textContent = sizeInput.value + "px";
+    }
+    sizeInput.addEventListener("input", applySize);
+    applySize();
+
+    // Suche
+    const search = document.getElementById("icon-search");
+    const empty = document.getElementById("empty");
+    function updateCount() {
+      const visible = document.querySelectorAll(".icon-tile:not([hidden])").length;
+      document.getElementById("count").textContent = visible + " sichtbar";
+    }
+    search.addEventListener("input", function () {
+      const q = search.value.trim().toLowerCase();
+      let anyVisible = false;
+      document.querySelectorAll(".cat").forEach((sec) => {
+        let catVisible = 0;
+        sec.querySelectorAll(".icon-tile").forEach((t) => {
+          const hit = t.dataset.name.includes(q) || sec.dataset.cat.toLowerCase().includes(q);
+          t.hidden = !hit;
+          if (hit) catVisible++;
+        });
+        sec.hidden = catVisible === 0;
+        if (catVisible) anyVisible = true;
+      });
+      empty.hidden = anyVisible;
+      updateCount();
+    });
+
+    // Klick kopiert den Einbau-Schnipsel
+    const toast = document.getElementById("toast");
+    let toastTimer;
+    document.addEventListener("click", function (e) {
+      const tile = e.target.closest(".icon-tile");
+      if (!tile) return;
+      const snippet = '<svg class="icon"><use href="icons.svg#' + tile.dataset.name + '"></use></svg>';
+      navigator.clipboard && navigator.clipboard.writeText(snippet);
+      toast.textContent = "Kopiert: " + tile.dataset.name;
+      toast.classList.add("is-visible");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("is-visible"), 1600);
+    });
+  </script>
+</body>
+</html>

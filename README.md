@@ -20,6 +20,9 @@ vermischen:
 | `showcase.css` | Nur Layout dieser Demo-Seite (Raster, Farbfelder, Skalen). Nicht Teil des Systems. |
 | `index.html` | Die Baukasten-Seite mit allen Elementen. |
 | `theme.js` | Theme-Umschaltung (`data-theme` am `<html>`). |
+| `icons.svg` | Icon-Set als Sprite: einfarbige Linien-Icons (`currentColor`), 24x24. Der wiederverwendbare Baustein. |
+| `icons.html` | Übersicht aller Icons mit Suche, Größenregler und Klick-zum-Kopieren. |
+| `icons.css` | Layout der Icon-Übersicht. |
 
 ## Das Prinzip: zwei Token-Stufen
 
@@ -48,6 +51,25 @@ Damit ist die Rangfolge einmal festgelegt; spätere Overrides gewinnen ohne
 - **Radien/Abstände:** die `--radius-*` bzw. `--space-*` in `tokens.css`.
 - **Neues Theme:** einen Block `[data-theme="name"] { … }` mit eigenen
   semantischen Werten ergänzen.
+
+## Icons
+
+Die Icons sind einfarbig und nicht fest gefärbt: sie nutzen `currentColor`,
+die Farbe bestimmt also das Design-System. Übersicht: `icons.html` im Browser
+öffnen (über einen lokalen Server, da die Seite `icons.svg` per Skript lädt).
+
+Einbau in eine Seite:
+
+```html
+<svg class="icon"><use href="icons.svg#check"></use></svg>
+```
+
+```css
+.icon { width: 1.25rem; height: 1.25rem; color: var(--color-accent); }
+```
+
+Neues Icon: in `icons.svg` ein weiteres `<symbol id="name" data-cat="Kategorie" …>`
+ergänzen. Die Übersicht in `icons.html` baut sich automatisch daraus auf.
 
 ## Übernahme in urbBase
 

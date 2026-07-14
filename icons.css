@@ -1,0 +1,88 @@
+/* ============================================================
+   Icon-Uebersicht (Showcase)
+   Nutzt die Tokens aus tokens.css. Icons sind einfarbig
+   (currentColor) und werden ueber color / var(--color-*) gefaerbt.
+   ============================================================ */
+
+@layer showcase {
+
+  /* Basisklasse fuer Icons in der App */
+  .icon {
+    width: var(--icon-size, 24px);
+    height: var(--icon-size, 24px);
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+  }
+
+  /* Steuerleiste */
+  .controls {
+    display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4);
+    padding: var(--space-4);
+    margin-bottom: var(--space-8);
+    border-radius: var(--radius-lg);
+  }
+  .controls .search { flex: 1 1 220px; }
+  .controls .ctrl { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-sm); color: var(--color-text-secondary); }
+  .controls .count { margin-left: auto; font-size: var(--text-sm); color: var(--color-text-muted); font-family: var(--font-mono); }
+
+  /* Kategorie */
+  .cat { margin-top: var(--space-10); }
+  .cat > h2 {
+    font-size: var(--text-lg); margin-bottom: var(--space-4);
+    display: flex; align-items: center; gap: var(--space-3);
+  }
+  .cat > h2::before { content: ""; width: 4px; height: 1.1em; background: var(--color-accent); border-radius: var(--radius-full); }
+  .cat > h2 .cat-count { font-size: var(--text-sm); color: var(--color-text-muted); font-weight: var(--font-normal); font-family: var(--font-mono); }
+
+  /* Raster */
+  .icon-grid { display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+
+  .icon-tile {
+    display: flex; flex-direction: column; align-items: center; gap: var(--space-3);
+    padding: var(--space-4) var(--space-3);
+    background: var(--color-surface);
+    border: var(--border-thin) solid var(--color-border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    color: var(--color-text);
+    transition: border-color var(--dur-fast) var(--ease),
+                background var(--dur-fast) var(--ease),
+                color var(--dur-fast) var(--ease),
+                transform var(--dur-fast) var(--ease);
+    text-align: center;
+  }
+  .icon-tile:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  .icon-tile:active { transform: translateY(0); }
+  .icon-tile .name {
+    font-family: var(--font-mono); font-size: 11px;
+    color: var(--color-text-muted);
+    word-break: break-all; line-height: 1.3;
+  }
+  .icon-tile:hover .name { color: var(--color-text-secondary); }
+
+  /* Kein-Treffer-Hinweis */
+  .empty { color: var(--color-text-muted); font-size: var(--text-sm); padding: var(--space-8) 0; text-align: center; }
+  .empty[hidden] { display: none; }
+
+  /* Toast bei Kopieren */
+  .toast {
+    position: fixed; bottom: var(--space-6); left: 50%; transform: translateX(-50%) translateY(1rem);
+    padding: var(--space-2) var(--space-4);
+    background: var(--color-text); color: var(--color-text-inverted);
+    border-radius: var(--radius-md); font-size: var(--text-sm);
+    box-shadow: var(--shadow-lg);
+    opacity: 0; pointer-events: none;
+    transition: opacity var(--dur-med) var(--ease), transform var(--dur-med) var(--ease);
+  }
+  .toast.is-visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* Ladefehler-Hinweis (z. B. beim Oeffnen ohne lokalen Server) */
+  .load-note { display: none; }
+  .load-note.is-visible { display: block; }
+}
