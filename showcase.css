@@ -168,6 +168,9 @@
     width: 6px;
     height: 1.05em;
     border-radius: var(--radius-full);
+    /* Grundfarbe zuerst, damit der Balken sichtbar bleibt, wenn
+       data-gradients="off" den Verlauf auf none setzt. */
+    background-color: var(--color-accent);
     background-image: var(--gradient-accent);
     box-shadow: var(--shadow-glow);
   }
@@ -264,7 +267,11 @@
     border: var(--border-thin) solid var(--color-border);
     /* Die Streifen liegen bewusst ganz oben. Erst an einer harten,
        gleichmaessigen Kante ist zu sehen, dass wirklich unscharf
-       gerechnet wird und nicht nur eine helle Flaeche liegt. */
+       gerechnet wird und nicht nur eine helle Flaeche liegt.
+       Die Grundfarbe gehoert in background-color: eine Farbe in der
+       Liste von background-image macht die ganze Regel ungueltig,
+       dann fehlt das Muster ersatzlos. */
+    background-color: var(--color-surface-2);
     background-image:
       repeating-linear-gradient(45deg,
         color-mix(in srgb, var(--color-text) 22%, transparent) 0 6px,
@@ -279,8 +286,7 @@
       radial-gradient(circle at 24% 88%,
         color-mix(in srgb, var(--tone-jade) 70%, transparent), transparent 48%),
       radial-gradient(circle at 92% 84%,
-        color-mix(in srgb, var(--tone-amber) 75%, transparent), transparent 48%),
-      var(--color-surface-2);
+        color-mix(in srgb, var(--tone-amber) 75%, transparent), transparent 48%);
   }
   .sg-stage__grid {
     display: grid;
@@ -429,6 +435,7 @@
   }
   .sg-grad {
     height: 4.5rem;
+    background-color: var(--color-accent);
     display: flex;
     align-items: flex-end;
     padding: var(--space-3);
@@ -472,8 +479,9 @@
   .sg-scale__bar {
     height: 0.75rem;
     border-radius: var(--radius-full);
+    /* Grundfarbe zuerst, siehe Balken der Ueberschrift. */
+    background-color: var(--color-accent);
     background-image: var(--gradient-accent);
-    
   }
 
   .sg-boxes { display: flex; flex-wrap: wrap; gap: var(--space-4); }
@@ -547,7 +555,32 @@
 
 
   /* ============================================================
-     8. KLEINE BILDSCHIRME
+     8. SCHALTER FUER GLAS UND VERLAEUFE
+     Drei Bloecke mit derselben Beispielgruppe, einmal normal,
+     einmal mit data-glass="off", einmal mit data-gradients="off".
+     Der Unterschied faellt nur im direkten Vergleich auf, deshalb
+     steht in jedem Block genau dasselbe. Die Klassen hier ordnen
+     nur an: jede Optik kommt aus den Tokens und Komponenten.
+     ============================================================ */
+
+  .sg-switch {
+    display: grid;
+    gap: var(--space-5);
+    justify-items: start;
+  }
+  .sg-switch__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  /* Die Karte bleibt schmal, sonst deckt sie das Streifenmuster
+     zu, an dem die Unschaerfe abzulesen ist. */
+  .sg-switch__card { max-width: 26rem; }
+
+
+  /* ============================================================
+     9. KLEINE BILDSCHIRME
      ============================================================ */
 
   @media (max-width: 40rem) {

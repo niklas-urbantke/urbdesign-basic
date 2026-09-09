@@ -3,12 +3,18 @@
 
 Aufruf:  python3 pruefen.py
 
-Prueft fuenf Dinge:
+Aufruf:  python3 pruefen.py --selbsttest   (nur die Selbsttests der Regeln)
+
+Prueft sieben Dinge:
   1. CSS-Struktur: Verschachtelung der Bloecke, nicht nur ihre Bilanz
   2. Die eiserne Regel: kein --urb-* und kein roher Farbwert ausserhalb tokens.css
   3. Jedes benutzte Token ist definiert oder hat einen Fallback
   4. Das Icon-Sprite in index.html ist auf dem Stand von icons.svg
   5. WCAG-Kontraste aller Textstufen, je Theme, auch auf Glasflaechen
+  6. Symbolfaehigkeit: jede Klasse, die ein Symbol aufnehmen kann, hat
+     display mit Flex-Wert und gap (D12a)
+  7. Showcase: index.html zeigt zu jeder dieser Klassen eine Variante mit
+     Symbol (D12b, nur Warnung)
 
 Keine Abhaengigkeiten, nur die Standardbibliothek.
 """
@@ -96,10 +102,101 @@ def pruefe_syntax(name, css):
                           f"({code.count(auf)} auf, {code.count(zu)} zu)")
 
 
-HEX = re.compile(r"#[0-9a-fA-F]{3,8}\b")
 FUNC = re.compile(r"\b(?:rgba?|hsla?)\s*\(")
 # --urb-noise ist ein Rauschmuster ohne Farbe und ausdruecklich erlaubt.
 URB = re.compile(r"--urb-(?!noise\b)[a-z]")
+
+
+# ------------------------------------------------------------
+#  Hex-Erkennung (D11)
+# ------------------------------------------------------------
+# Frueher genuegte "#" plus drei bis acht Hex-Ziffern. Damit galt die
+# Vue-Kurzform eines Slots (<template #bad>) als Farbe, ebenso jeder
+# Anker (href="#check") und jeder Verweis auf einen Verlauf (url(#id)).
+# Ein echter Farbwert steht in Wertposition, also hinter einem
+# Doppelpunkt oder in einer Funktionsklammer.
+HEX_KANDIDAT = re.compile(r"#[0-9a-fA-F]{3,8}")
+# Direkt vor einem Farbwert steht nie ein Anfuehrungs- oder Gleichheitszeichen.
+VOR_KEIN_HEX = "\"'="
+URL_DAVOR = re.compile(r"url\(\s*$", re.I)
+# Grenzen des laufenden Abschnitts: Deklaration, Block, HTML-Tag.
+TRENNER = ";{}<>"
+WORTZEICHEN = re.compile(r"[\w-]")
+
+
+def hex_treffer(text):
+    """Liefert alle rohen Farbwerte in CSS-Wertposition als Match-Objekte.
+
+    Ein Treffer verlangt dreierlei:
+      * 3, 4, 6 oder 8 Hex-Ziffern und danach kein Wortzeichen
+      * kein Anfuehrungszeichen, Gleichheitszeichen oder url( davor
+      * Wertposition: im laufenden Abschnitt steht ein Doppelpunkt davor,
+        oder die Stelle liegt in einer noch offenen Funktionsklammer
+    """
+    for m in HEX_KANDIDAT.finditer(text):
+        if len(m.group(0)) - 1 not in (3, 4, 6, 8):
+            continue
+        rest = text[m.end():m.end() + 1]
+        if rest and WORTZEICHEN.match(rest):
+            continue
+        davor = text[:m.start()]
+        if davor and davor[-1] in VOR_KEIN_HEX:
+            continue
+        if URL_DAVOR.search(davor):
+            continue
+        schnitt = max(davor.rfind(c) for c in TRENNER)
+        abschnitt = davor[schnitt + 1:]
+        offene_klammer = abschnitt.count("(") - abschnitt.count(")")
+        if ":" not in abschnitt and offene_klammer <= 0:
+            continue
+        yield m
+
+
+def hat_hex(text):
+    return any(True for _ in hex_treffer(text))
+
+
+# Gegentest laut Vertrag D11: links der Text, rechts ob ein Treffer erwartet wird.
+HEX_FAELLE = [
+    ("color: #bad", True),
+    ("border-color:#a1b2c3", True),
+    ("box-shadow: 0 0 0 #fff8", True),
+    ("background-image: linear-gradient(#fff, #000)", True),
+    ("<template #bad>", False),
+    ('href="#check"', False),
+    ("url(#urb-grad-azure)", False),
+    ('<use href="#urb-grad-rose">', False),
+    ("#nicht-hex", False),
+    ("url(#fade)", False),
+    ('<use xlink:href="#beef">', False),
+    ("color: #abcde", False),
+    ("#app { color: var(--color-text); }", False),
+]
+
+
+def selbsttest_hex():
+    """Prueft die Hex-Regel gegen die Faelle aus dem Vertrag.
+    Gibt die Liste der durchgefallenen Faelle zurueck, leer heisst bestanden."""
+    durchgefallen = []
+    for text, erwartet in HEX_FAELLE:
+        ist = hat_hex(text)
+        if ist != erwartet:
+            durchgefallen.append(
+                f"{text!r}: erwartet {'Treffer' if erwartet else 'kein Treffer'}, "
+                f"bekommen {'Treffer' if ist else 'kein Treffer'}")
+    return durchgefallen
+
+
+if "--selbsttest" in sys.argv:
+    schlecht = selbsttest_hex()
+    print(f"Selbsttest Hex-Regel: {len(HEX_FAELLE)} Faelle")
+    for s in schlecht:
+        print("  FEHLGESCHLAGEN " + s)
+    print("  bestanden" if not schlecht else f"  {len(schlecht)} fehlgeschlagen")
+    sys.exit(1 if schlecht else 0)
+
+for s in selbsttest_hex():
+    fehler.append(f"pruefen.py: Selbsttest der Hex-Regel fehlgeschlagen -> {s}")
 
 tokens_css = (ROOT / "tokens.css").read_text()
 pruefe_syntax("tokens.css", tokens_css)
@@ -114,9 +211,11 @@ for name in CSS_DATEIEN:
     pruefe_syntax(name, roh)
     code = entkommentiert(roh)
 
-    for muster, label in ((HEX, "roher Hex-Wert"), (FUNC, "rgb/hsl-Funktion"), (URB, "Primitiv --urb-*")):
-        for m in muster.finditer(code):
-            fehler.append(f"{name}:{code[:m.start()].count(chr(10)) + 1}: {label} -> {m.group(0)}")
+    treffer = [(m, "roher Hex-Wert") for m in hex_treffer(code)]
+    for muster, label in ((FUNC, "rgb/hsl-Funktion"), (URB, "Primitiv --urb-*")):
+        treffer += [(m, label) for m in muster.finditer(code)]
+    for m, label in sorted(treffer, key=lambda t: t[0].start()):
+        fehler.append(f"{name}:{code[:m.start()].count(chr(10)) + 1}: {label} -> {m.group(0)}")
 
     # Die Kurzform "background:" setzt background-origin auf padding-box
     # zurueck und hebt damit die Regel aus dem base-Layer auf. Folge ist
@@ -145,7 +244,7 @@ for name in HTML_DATEIEN:
     for m in re.finditer(r'style="([^"]*)"', roh):
         inhalt, pos = m.group(1), m.start()
         zeile = roh[:pos].count("\n") + 1
-        if HEX.search(inhalt) or FUNC.search(inhalt):
+        if hat_hex(inhalt) or FUNC.search(inhalt):
             fehler.append(f"{name}:{zeile}: roher Farbwert im style-Attribut")
         if re.search(r"(?:^|;\s*)background:\s", inhalt):
             fehler.append(f"{name}:{zeile}: Kurzform 'background:' im style-Attribut "
@@ -301,6 +400,193 @@ for theme, table in THEMES.items():
 
 for theme, t, f, r in schwach:
     (fehler if r < AA_GROSS else warnungen).append(f"Kontrast {theme}: {t} auf {f} nur {r:.1f}:1")
+
+
+# ============================================================
+#  6 und 7: Symbolfaehigkeit (D12)
+# ============================================================
+# Drei gemeldete Layoutfehler hatten dieselbe Wurzel: eine Komponente darf
+# ein Symbol aufnehmen, ist aber nicht darauf ausgelegt. Ohne Flex-Anzeige
+# und ohne gap klebt das Symbol am Text und sitzt auf der Grundlinie.
+# In der Showcase faellt das nicht auf, solange dort nur Textvarianten stehen.
+SYMBOL_KLASSEN = [
+    "btn", "segmented__item", "tab", "menu__item", "chip", "alert",
+    "toast", "badge", "field__group", "page-btn", "step", "empty",
+]
+# gap ist die Vorgabe; column-gap wird als gleichwertig anerkannt, es
+# erzeugt denselben waagerechten Abstand zwischen Symbol und Text.
+GAP_NAMEN = ("gap", "column-gap")
+GRUPPE = re.compile(r":(?:is|where|matches)\(([^()]*)\)", re.I)
+KOMBINATOR = re.compile(r"\s*[>+~]\s*|\s+")
+PSEUDO = re.compile(r"(?<!:):(?!:)")
+
+
+def ohne_strings(css):
+    """Ersetzt Zeichenketten durch leere, damit Data-URIs mit Klammern
+    oder Semikolon die Zerlegung nicht durcheinanderbringen."""
+    return re.sub(r'"[^"]*"|\'[^\']*\'', '""', css)
+
+
+def css_regeln(css):
+    """Zerlegt CSS in (Selektortext, Rumpf) und steigt dabei in @layer,
+    @media und @supports hinein. @keyframes und Verwandte bleiben aussen vor."""
+    regeln = []
+
+    def lauf(text):
+        i = 0
+        while True:
+            j = text.find("{", i)
+            if j < 0:
+                return
+            kopf = text[i:j].strip()
+            k, tiefe = j, 0
+            while k < len(text):
+                if text[k] == "{":
+                    tiefe += 1
+                elif text[k] == "}":
+                    tiefe -= 1
+                    if tiefe == 0:
+                        break
+                k += 1
+            rumpf = text[j + 1:k]
+            if kopf.startswith("@"):
+                if not kopf.startswith(("@keyframes", "@font-face", "@property")):
+                    lauf(rumpf)
+            else:
+                regeln.append((kopf, rumpf))
+            i = k + 1
+
+    lauf(ohne_strings(entkommentiert(css)))
+    return regeln
+
+
+def selektor_teile(sel):
+    """Trennt an Kommas der obersten Ebene, also nicht in :is(...)."""
+    teile, akt, tiefe = [], "", 0
+    for c in sel:
+        if c in "([":
+            tiefe += 1
+        elif c in ")]":
+            tiefe -= 1
+        if c == "," and tiefe == 0:
+            teile.append(akt)
+            akt = ""
+        else:
+            akt += c
+    teile.append(akt)
+    return [t.strip() for t in teile if t.strip()]
+
+
+def entfalte(teil, tiefe=0):
+    """Loest :is()- und :where()-Sammelselektoren in einzelne Selektoren auf,
+    damit eine Deklaration aus einer Gruppe der einzelnen Klasse zugerechnet wird."""
+    m = GRUPPE.search(teil)
+    if not m or tiefe > 6:
+        return [teil]
+    raus = []
+    for alt in selektor_teile(m.group(1)):
+        raus += entfalte(teil[:m.start()] + alt + teil[m.end():], tiefe + 1)
+    return raus
+
+
+def gilt_fuer(selektor, klasse):
+    """Wahr, wenn der Selektor das Element selbst und bedingungslos trifft.
+    Vorfahren duerfen davorstehen, Zustaende und Zusatzklassen nicht:
+    .tab trifft zu, .tabs .tab auch, .tab:hover und .tab.is-active nicht."""
+    letzte = KOMBINATOR.split(selektor.strip())[-1]
+    if not letzte or "::" in letzte or "[" in letzte or PSEUDO.search(letzte):
+        return False
+    return re.findall(r"\.([A-Za-z0-9_-]+)", letzte) == [klasse]
+
+
+def deklarationen(rumpf):
+    """Eigenschaft und Wert je Deklaration, in Reihenfolge der Datei."""
+    return re.findall(r"(?:^|[;{])\s*(-{0,2}[a-zA-Z][a-zA-Z0-9-]*)\s*:\s*([^;{}]*)", rumpf)
+
+
+def gesammelt(regeln, klasse):
+    """Alle Deklarationen, die fuer die Klasse selbst gelten, quer ueber
+    mehrere Regeln und Sammelselektoren. Spaeter gewinnt."""
+    werte = {}
+    for kopf, rumpf in regeln:
+        passt = any(gilt_fuer(s, klasse)
+                    for teil in selektor_teile(kopf) for s in entfalte(teil))
+        if not passt:
+            continue
+        for prop, wert in deklarationen(rumpf):
+            werte[prop.strip().lower()] = wert.strip()
+    return werte
+
+
+SVG_ICON = re.compile(r'<svg\b[^>]*\bclass="[^"]*\bicon\b', re.I)
+LEERE_TAGS = {"input", "img", "br", "hr", "use", "path", "meta", "link", "source"}
+
+
+def element_inhalt(html, start):
+    """Inhalt des Elements, dessen Starttag bei start beginnt."""
+    m = re.match(r"<([a-zA-Z][\w-]*)", html[start:])
+    if not m:
+        return ""
+    tag = m.group(1)
+    auf_ende = html.find(">", start)
+    if auf_ende < 0 or html[auf_ende - 1] == "/" or tag.lower() in LEERE_TAGS:
+        return ""
+    muster = re.compile(r"</?" + re.escape(tag) + r"\b", re.I)
+    tiefe, i = 1, auf_ende + 1
+    while True:
+        mm = muster.search(html, i)
+        if not mm:
+            return html[auf_ende + 1:]
+        if html[mm.start() + 1] == "/":
+            tiefe -= 1
+            if tiefe == 0:
+                return html[auf_ende + 1:mm.start()]
+        else:
+            tiefe += 1
+        i = mm.end()
+
+
+def zeigt_symbol(html, klasse):
+    """Wahr, wenn irgendein Element mit dieser Klasse ein <svg class="icon ...
+    enthaelt, die Showcase also die Variante mit Symbol zeigt."""
+    for m in re.finditer(r'class="([^"]*)"', html):
+        if klasse not in m.group(1).split():
+            continue
+        start = html.rfind("<", 0, m.start())
+        if start < 0:
+            continue
+        if SVG_ICON.search(element_inhalt(html, start)):
+            return True
+    return False
+
+
+comp_css = (ROOT / "components.css").read_text()
+REGELN = css_regeln(comp_css)
+
+print("Symbolfaehigkeit (Flex-Anzeige und gap, D12)\n")
+print(f"    {'Klasse':<20}{'display':<16}{'gap':<20}{'Showcase':<10}")
+for klasse in SYMBOL_KLASSEN:
+    werte = gesammelt(REGELN, klasse)
+    anzeige = werte.get("display")
+    gap_prop = next((p for p in GAP_NAMEN if werte.get(p)), None)
+    gap_wert = werte.get(gap_prop) if gap_prop else None
+
+    fehlt = []
+    if not anzeige or "flex" not in anzeige:
+        fehlt.append(f"display mit Flex-Wert (gefunden: {anzeige or 'nichts'})")
+    if not gap_wert or gap_wert in ("0", "normal"):
+        fehlt.append(f"gap (gefunden: {gap_wert or 'nichts'})")
+    if fehlt:
+        fehler.append(f"components.css: .{klasse} kann ein Symbol aufnehmen, "
+                      f"ist aber nicht darauf ausgelegt, es fehlt " + " und ".join(fehlt))
+
+    im_html = zeigt_symbol(idx, klasse)
+    if not im_html:
+        warnungen.append(f"index.html: zu .{klasse} fehlt ein Beispiel mit "
+                         f"<svg class=\"icon ...>, die Symbolvariante fehlt in der Showcase")
+    print(f"    {'.' + klasse:<20}{(anzeige or '-'):<16}"
+          f"{(gap_wert or '-'):<20}{'ja' if im_html else 'FEHLT':<10}")
+print()
 
 
 # ============================================================

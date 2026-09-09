@@ -1,5 +1,98 @@
 # Änderungen
 
+## v0.4 — Rückmeldungen aus dem ersten Einsatz (2026-09-09)
+
+Das System wurde erstmals in zwei echten Anwendungen eingesetzt (Electron/Vue und
+Android/Jetpack Compose). Elf gemeldete Punkte, abgearbeitet in vier Bündeln.
+
+### Harte Fehler
+
+**Symbole in Segmenten und Reitern.** `.segmented__item` und `.tab` waren reine
+Textknöpfe ohne `display: flex`, `align-items` und `gap`. Ein Symbol davor klebte
+am Text und saß auf der Grundlinie. Beide haben jetzt `inline-flex`,
+`align-items: center`, `justify-content: center` und `gap`.
+
+**Auswahlfeld mit eigenem Pfeil.** `.select` behielt den Systemstil, gesetzt war
+nur `padding-inline-end`. Auf macOS zeichnet das Betriebssystem seinen eigenen
+Pfeil und reserviert dafür Platz, dadurch stand der Wert nicht bündig zu den
+Textfeldern. Jetzt `appearance: none` und ein eigener Pfeil über die neuen Tokens
+`--urb-chevron-dark`, `--urb-chevron-light` und `--select-arrow`, je Theme.
+
+**Dunkle Kante nur noch auf durchscheinenden Flächen.** Der innere Schatten
+`inset 0 -1px 0 var(--glass-lowlight)` las sich auf gefüllten Flächen als
+schwarzer Strich, im dunklen Theme ist die Farbe Schwarz mit 30 Prozent. Entfernt
+aus `.btn`, `.card`, `.icon-tile` und `.table thead th`, erhalten in der
+`:is(.glass, …)`-Gruppe. Die eingelassenen Schatten der Eingabefelder
+(`inset 0 2px 4px`) sind unberührt, die erzeugen Tiefe und keinen Strich.
+
+### Fehlende Muster
+
+**Feld mit führendem Symbol.** Neu `.field__group`, `.field__icon` und
+`.field__group--trailing`. Der Grund, warum das ins System gehört und nicht in
+jede Anwendung: `.input`, `.textarea` und `.select` tragen `backdrop-filter`, das
+öffnet einen Stapelkontext, und ein absolut positioniertes Geschwister-Symbol
+ohne `z-index` wird dahinter gezeichnet. Sichtbar bleibt nur der reservierte
+Platz, also ein scheinbar grundloser Rand. `.field__icon` trägt deshalb ein
+ausdrückliches `z-index: 1`, und die Falle steht als Kommentar an der Regel.
+
+**28 neue Icons**, 101 auf 129. Diagramme (`bar-chart`, `line-chart`,
+`pie-chart`), Medien (`music`, `video`, `mic`, `volume`, `volume-off`), Dateien
+(`folder-open`, `folder-plus`, `file-plus`, `time`, `timer`, `checklist`),
+Wiedergabe (`replay`, `skip-back`, `skip-forward`, `shuffle`, `repeat`), Ansicht
+(`list-ordered`, `columns`, `sidebar-right`) und Bearbeitung (`pin`, `unpin`,
+`move`, `crop`, `undo`, `redo`).
+
+`activity` bleibt die Pulslinie für Systemzustand. Statistiken nutzen ab jetzt
+`bar-chart` oder `line-chart`; vorher mussten sie sich `activity` mit einer
+anderen Funktion teilen, wodurch zwei gleiche Bilder nebeneinander standen.
+
+### Konzeptionelle Lücken (README)
+
+**Achsen.** `data-theme` trug zu viel. Vier unabhängige Fragen in einen Wert
+gepresst führte dazu, dass ein Stil-Block mit `color-scheme: light` im dunklen
+Erscheinungsbild sämtliche Bedienelemente ins Helle kippte. Neuer Abschnitt mit
+einer Tabelle, welche Achse welche Rolle umbiegen darf, und der Kernregel:
+`color-scheme` gehört ausschließlich zu `data-theme`.
+
+**Zweiter Token-Satz als Stil**, samt der Einschränkung, dass Regeln mit einem
+Selektor auf eine Komponente im Token-Layer gegen `components.css` verlieren und
+in einen eigenen Layer dahinter gehören.
+
+**Wann Glas abschalten**, mit vier Kriterien, plus die Schalter dafür:
+`[data-glass="off"]` setzt Unschärfe auf 0, macht die Tints deckend und nimmt die
+Körnung heraus. `[data-gradients="off"]` nimmt alle Verläufe. Beide in
+`tokens.css`, `components.css` blieb unverändert.
+
+**Portierung**, eine Tabelle je Token-Gruppe. Nicht übertragbar sind
+`backdrop-filter` (auf Android erst ab API 31 über `RenderEffect`, und nur mit
+eigener Ebene unter dem Inhalt, sonst wird der Text mit unscharf) und die
+Körnung (Füllrate, auf Telefondichten kaum sichtbar). Beides ist genau das, was
+`data-glass="off"` ausschaltet: eine Portierung entspricht dem System in diesem
+Zustand.
+
+**Markenzeichen** bleiben draußen, mit Begründung und Verweis, wohin damit.
+
+### Prüfung
+
+**Fehlalarm behoben.** Die Hex-Erkennung wertete die Vue-Slot-Kurzform `#name`
+als Farbe. Ein Treffer verlangt jetzt 3, 4, 6 oder 8 Hex-Ziffern, danach kein
+Wortzeichen, kein Anführungs- oder Gleichheitszeichen und kein `url(` davor, und
+Wertposition. 13 Fälle als eingebauter Selbsttest, auch einzeln aufrufbar über
+`python3 pruefen.py --selbsttest`.
+
+**Symbolfähigkeit.** Neue Prüfung: Jede Klasse, die ein Symbol aufnehmen kann,
+muss Flex-Anzeige und `gap` haben, und `index.html` muss zu jeder ein Beispiel
+mit Symbol zeigen. Genau diese Lücke hatte die drei Layoutfehler durchrutschen
+lassen, weil die Showcase nur Textvarianten zeigte. `.page-btn` fehlte dabei als
+einziger noch ein `gap`.
+
+### Showcase
+
+Jede Komponente steht jetzt mit **und** ohne Symbol nebeneinander, dazu
+Auswahlfeld neben Textfeld, beide Feldvarianten mit Symbol samt Hinweis auf die
+Stapelkontext-Falle, und ein neuer Abschnitt 16 „Schalter" mit denselben
+Beispielen einmal normal, einmal ohne Glas, einmal ohne Verläufe.
+
 ## v0.3.3 — Klammerfehler in components.css (2026-09-09)
 
 Von einem anderen Team gemeldet: Der Build brach an `components.css:1289` ab.

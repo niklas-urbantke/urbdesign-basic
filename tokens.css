@@ -183,6 +183,15 @@
     /* Acryl-Rauschen (Fluent-Anleihe): feine Koernung auf der Glasflaeche.
        Ein SVG mit feTurbulence als Data-URI, damit keine Bilddatei noetig ist. */
     --urb-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+
+    /* Chevron des Auswahlfeldes, zweite erlaubte Ausnahme neben --urb-noise:
+       ein Muster, keine Theme-Farbe. Ein Winkel aus zwei Linien, Strichstaerke 2,
+       runde Enden. Zwei Fassungen, weil ein SVG als Hintergrundbild keine
+       currentColor kennt: dark fuer helle Themes, light fuer dunkle.
+       Die Raute des Farbwertes steht als %23, damit die Datei keine rohe
+       Raute in einer Wertposition traegt. */
+    --urb-chevron-dark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%23313e52' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 4.5 L6 8 L9.5 4.5'/%3E%3C/svg%3E");
+    --urb-chevron-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%23b3c4da' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 4.5 L6 8 L9.5 4.5'/%3E%3C/svg%3E");
   }
 
   /* ============================================================
@@ -220,6 +229,15 @@
     /* ---------- Linien ---------- */
     --color-border:        var(--urb-slate-200);
     --color-border-strong: var(--urb-slate-300);
+
+    /* ---------- Formularfelder ----------
+       select-arrow      eigener Pfeil des Auswahlfeldes, ersetzt den
+                         Systempfeil, damit .select und .input buendig sind
+       field-icon-inset  Abstand des fuehrenden Symbols vom Rand
+       field-icon-space  Platz, den ein fuehrendes Symbol im Feld belegt */
+    --select-arrow:     var(--urb-chevron-dark);
+    --field-icon-inset: var(--space-3);
+    --field-icon-space: 2.25rem;
 
     /* ---------- Akzent ---------- */
     --color-accent:        var(--urb-azure-600);
@@ -345,6 +363,9 @@
     --color-border:        color-mix(in srgb, var(--urb-white) 12%, transparent);
     --color-border-strong: color-mix(in srgb, var(--urb-white) 22%, transparent);
 
+    /* Im Dunkeln zeichnet der Pfeil hell, sonst verschwindet er im Feld. */
+    --select-arrow: var(--urb-chevron-light);
+
     --color-accent:        var(--urb-azure-300);
     --color-accent-hover:  var(--urb-azure-200);
     --color-accent-active: var(--urb-azure-100);
@@ -425,6 +446,48 @@
     --shadow-glass: 0 10px 34px color-mix(in srgb, var(--urb-black) 55%, transparent);
     --shadow-glow:  0 0 0 1px var(--glass-edge),
                     0 8px 28px color-mix(in srgb, var(--urb-azure-400) 30%, transparent);
+  }
+
+
+  /* ============================================================
+     3. SCHALTER: Glas und Verlaeufe abschaltbar
+     ------------------------------------------------------------
+     Beide Bloecke stehen bewusst hinter den Theme-Bloecken. Sie haben
+     dieselbe Spezifitaet wie [data-theme="dark"], gewinnen also nur ueber
+     die Reihenfolge. Die Attribute gelten unabhaengig vom Theme und lassen
+     sich auf jedem Element setzen, nicht nur an der Wurzel.
+
+     Warum das gebraucht wird: waehlt eine Anwendung einen einfarbigen
+     Grund, hat backdrop-filter nichts zum Durchscheinen, kostet aber
+     weiter Leistung. Statt in jeder Anwendung eigene Ueberschreibungen zu
+     bauen, wird hier zentral die Ursache umgestellt. Die Komponenten
+     bleiben unveraendert, sie lesen ohnehin nur diese Tokens.
+     ============================================================ */
+
+  /* Glas aus: keine Unschaerfe, deckende Flaechen, keine Koernung. */
+  [data-glass="off"] {
+    --glass-blur:        0px;
+    --glass-blur-strong: 0px;
+    --glass-tint:        var(--color-surface);
+    --glass-tint-strong: var(--color-surface);
+    --glass-tint-sunken: var(--color-surface-2);
+    --glass-noise-opacity: 0;
+  }
+
+  /* Verlaeufe aus: jede Flaeche zeigt nur noch ihre Grundfarbe. Deshalb
+     muss jede Komponente mit Verlauf zusaetzlich eine background-color
+     tragen, sonst bliebe sie farblos. */
+  [data-gradients="off"] {
+    --gradient-accent: none;
+    --gradient-warm:   none;
+    --gradient-cool:   none;
+
+    --tone-azure-grad:  none;
+    --tone-indigo-grad: none;
+    --tone-amber-grad:  none;
+    --tone-jade-grad:   none;
+    --tone-rose-grad:   none;
+    --tone-slate-grad:  none;
   }
 
 

@@ -209,9 +209,10 @@
     background-image: var(--btn-img);
     border: var(--border-thin) solid var(--btn-bd);
     border-radius: var(--radius-md);
-    box-shadow:
-      inset 0 calc(-1 * var(--border-thin)) 0 var(--glass-lowlight),
-      var(--btn-shadow);
+    /* Keine innere dunkle Kante: auf einer gefuellten Flaeche scheint nichts
+       durch, dort liest sich die Kante als schwarzer Strich statt als Tiefe.
+       Sie bleibt der Glasgruppe aus Abschnitt 1 vorbehalten. */
+    box-shadow: var(--btn-shadow);
     cursor: pointer;
     user-select: none;
     white-space: nowrap;
@@ -329,12 +330,66 @@
   .input:focus-visible, .textarea:focus-visible, .select:focus-visible { border-color: var(--color-accent); background-color: var(--glass-tint); }
 
   .textarea { resize: vertical; min-height: 5rem; line-height: var(--leading-normal); }
-  .select { padding-inline-end: var(--space-2); }
+  /* Auswahlfeld mit eigenem Pfeil. Der Systemstil zeichnet auf macOS einen
+     eigenen Pfeil und reserviert dafuer Platz, dadurch steht der Wert nicht
+     buendig zu den Textfeldern. Mit appearance:none entfaellt beides, den
+     Pfeil setzt das System selbst als Hintergrundbild, immer als Langform,
+     nie als Kurzform background:. Kein Wrapper noetig, <select class="select">
+     genuegt allein. */
+  .select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-inline-end: calc(var(--space-3) + 1.5rem);
+    background-image: var(--select-arrow);
+    background-repeat: no-repeat;
+    background-position: right var(--space-3) center;
+    background-size: 0.75rem;
+  }
+  /* Altes Edge zeichnet sonst zusaetzlich seinen eigenen Pfeil. */
+  .select::-ms-expand { display: none; }
 
   .input--error { border-color: var(--color-danger); }
   .input--error:focus-visible { border-color: var(--color-danger); }
 
   .input:disabled, .textarea:disabled, .select:disabled { opacity: 0.6; cursor: not-allowed; background-color: var(--color-surface-2); }
+
+  /* ---------- Feld mit fuehrendem Symbol ----------
+     Ein Muster, das sonst jede Anwendung selbst baut, und dabei stets in
+     dieselbe Falle laeuft:
+
+     .input, .textarea und .select tragen backdrop-filter. Diese Eigenschaft
+     oeffnet einen eigenen Stapelkontext. Ein absolut positioniertes
+     Geschwister-Symbol ohne z-index wird deshalb HINTER dem Feld gezeichnet
+     und ist unsichtbar. Zu sehen bleibt nur der Platz, den das Feld dafuer
+     freihaelt, also ein scheinbar grundloser Rand links im Feld.
+     Deshalb traegt .field__icon ausdruecklich z-index: 1.
+
+     Das Symbol schwimmt absolut, das gap wirkt sich also nicht auf die
+     Lage aus. Es steht trotzdem, damit jedes weitere Kind im Fluss
+     denselben Abstand bekommt wie in allen anderen Komponenten. */
+  .field__group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .field__icon {
+    position: absolute;
+    z-index: 1;
+    inset-inline-start: var(--field-icon-inset);
+    color: var(--color-text-muted);
+    pointer-events: none;
+  }
+  .field__group--trailing .field__icon {
+    inset-inline-start: auto;
+    inset-inline-end: var(--field-icon-inset);
+  }
+  .field__group > .input,
+  .field__group > .select { padding-inline-start: var(--field-icon-space); }
+  .field__group--trailing > .input {
+    padding-inline-start: var(--space-3);
+    padding-inline-end: var(--field-icon-space);
+  }
 
   /* Checkbox und Radio bleiben nativ, eingefaerbt ueber accent-color. */
   .checkbox, .radio { display: inline-flex; align-items: center; gap: var(--space-2); font-size: var(--text-sm); cursor: pointer; }
@@ -597,9 +652,8 @@
     background-color: var(--card-bg);
     border: var(--border-thin) solid var(--card-line);
     border-radius: var(--card-radius);
-    box-shadow:
-      inset 0 calc(-1 * var(--border-thin)) 0 var(--glass-lowlight),
-      var(--card-shadow);
+    /* Innere dunkle Kante entfaellt, siehe .btn. */
+    box-shadow: var(--card-shadow);
     overflow: hidden;
   }
   .card__header { padding: var(--space-4) var(--space-5); font-weight: var(--font-semibold); border-bottom: var(--border-thin) solid var(--color-border); }
@@ -622,8 +676,15 @@
   .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); padding: var(--space-2) var(--space-3); }
 
   .tabs { display: flex; flex-wrap: wrap; gap: var(--space-1); border-bottom: var(--border-thin) solid var(--color-border); }
+  /* Reiter koennen ein fuehrendes Symbol tragen (<svg class="icon icon--sm">).
+     Deshalb inline-flex statt eines reinen Textknopfes: sonst sitzt das
+     Symbol auf der Grundlinie und klebt am Text. */
   .tab {
     position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
     padding: var(--space-3) var(--space-4);
     font-size: var(--text-sm);
     font-weight: var(--font-medium);
@@ -668,7 +729,13 @@
     box-shadow:
       inset 0 2px 4px var(--glass-lowlight);
   }
+  /* Wie .tab: nimmt ein fuehrendes Symbol auf, deshalb inline-flex mit
+     mittiger Ausrichtung und eigenem Abstand zum Text. */
   .segmented__item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
     padding: var(--space-2) var(--space-4);
     font-size: var(--text-sm);
     font-weight: var(--font-medium);
@@ -705,8 +772,8 @@
     background-color: var(--glass-tint-strong);
     -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
     backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-    box-shadow:
-      inset 0 calc(-1 * var(--border-thin)) 0 var(--glass-lowlight);
+    /* Innere dunkle Kante entfaellt, siehe .btn. Die Trennung zur ersten
+       Datenzeile leistet bereits das border-bottom von .table th. */
   }
   .table tbody tr { transition: background-color var(--dur-fast) var(--ease); }
   .table tbody tr:hover { background-color: var(--color-accent-soft); }
@@ -810,6 +877,8 @@
     place-items: center;
     min-height: 16rem;
     padding: var(--space-8);
+    /* Grundfarbe unter dem Verlauf, siehe .avatar. */
+    background-color: var(--color-accent);
     background-image: var(--gradient-accent);
     border-radius: var(--radius-xl);
     overflow: hidden;
@@ -823,6 +892,8 @@
     justify-content: center;
     min-width: 2.25rem;
     height: 2.25rem;
+    /* Abstand fuer Blaetter-Knoepfe mit Pfeilsymbol statt Ziffer. */
+    gap: var(--space-2);
     padding: 0 var(--space-2);
     font-size: var(--text-sm);
     font-weight: var(--font-medium);
@@ -1075,6 +1146,9 @@
     font-size: var(--text-sm);
     font-weight: var(--font-semibold);
     color: var(--color-on-accent);
+    /* Grundfarbe unter dem Verlauf: mit data-gradients="off" steht dort
+       none, ohne background-color bliebe der Kreis farblos. */
+    background-color: var(--tone, var(--color-accent));
     background-image: var(--tone-grad, var(--gradient-accent));
     border: var(--border-med) solid var(--color-surface);
     border-radius: var(--radius-full);
@@ -1193,9 +1267,9 @@
     background-image: var(--tile-grad);
     border: none;
     border-radius: var(--radius-lg);
-    box-shadow:
-      inset 0 calc(-1 * var(--border-thin)) 0 var(--glass-lowlight),
-      var(--shadow-md);
+    /* Innere dunkle Kante entfaellt, siehe .btn. Auf der hellen Akzent-
+       flaeche der Kachel fiele sie am staerksten auf. */
+    box-shadow: var(--shadow-md);
   }
   .icon-tile > .icon { filter: drop-shadow(0 1px 1px var(--glass-lowlight)); }
   .icon-tile--azure  { --tile-grad: var(--tone-azure-grad);  background-color: var(--tone-azure); }
