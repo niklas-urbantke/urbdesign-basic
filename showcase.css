@@ -1,119 +1,654 @@
 /* ============================================================
-   Showcase-Layout
-   Nur fuer die Demo-Seite (index.html): Raster, Kopfzeile,
-   Farbfelder, Skalen-Darstellung. Nicht Teil der Komponenten.
+   urbDesign "Aero Plasma": Showcase-Layout
+
+   Diese Datei gehoert allein der Referenzseite (index.html).
+   Sie enthaelt Raster, Farbfeld-Darstellung, Skalen-Balken,
+   Beispielrahmen und den Aero-Hintergrund. Kein Nachbau von
+   Komponenten: alles, was der Vertrag als Klasse nennt, kommt
+   aus components.css.
+
+   Alle Klassen dieser Datei tragen das Praefix "sg-", damit sie
+   sich nie mit einer Komponentenklasse ueberschneiden.
+
+   Eiserne Regel: niemals --urb-* und niemals ein roher Farbwert.
+   Nur semantische Tokens.
    ============================================================ */
 
 @layer showcase {
 
-  /* Farbige Verlaufs-Blobs im Hintergrund, damit der Glaseffekt sichtbar ist */
-  body::before,
-  body::after {
-    content: "";
+  /* ============================================================
+     1. AERO-HINTERGRUND
+     Vier weiche Farbblobs (Azure, Indigo, Amber, Jade) liegen
+     fest im Blickfeld und wandern sehr langsam. Darueber ein
+     feines Lichtmuster. Ohne diese Ebene bliebe jede Glasflaeche
+     wirkungslos, denn Unschaerfe braucht etwas zum Verwischen.
+     ============================================================ */
+
+  .sg-aero {
     position: fixed;
-    z-index: -1;
-    width: 45vw; height: 45vw;
-    border-radius: var(--radius-full);
-    filter: blur(80px);
-    opacity: 0.5;
+    inset: 0;
+    z-index: var(--z-base);
+    overflow: hidden;
     pointer-events: none;
   }
-  body::before { top: -10vw; left: -8vw;  background: radial-gradient(circle, var(--urb-accent-400), transparent 70%); }
-  body::after  { bottom: -12vw; right: -8vw; background: radial-gradient(circle, var(--urb-accent-600), transparent 70%); }
 
-  .page { max-width: 1080px; margin: 0 auto; padding: 0 var(--space-6) var(--space-16); }
-
-  /* Sticky Kopfzeile in Glasoptik */
-  .topbar {
-    position: sticky; top: 0; z-index: 10;
-    display: flex; align-items: center; justify-content: space-between;
-    gap: var(--space-4);
-    padding: var(--space-4) var(--space-6);
-    margin-bottom: var(--space-10);
-    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  .sg-aero__blob {
+    position: absolute;
+    width: 62vmax;
+    height: 62vmax;
+    border-radius: var(--radius-full);
+    filter: blur(70px);
+    opacity: 0.45;
+    will-change: transform;
+    animation: sg-drift 72s var(--ease) infinite alternate;
   }
-  .topbar__brand { display: flex; align-items: center; gap: var(--space-3); font-weight: var(--font-bold); font-size: var(--text-lg); }
-  .brand-mark {
-    width: 2rem; height: 2rem; border-radius: var(--radius-md);
-    background: linear-gradient(135deg, var(--urb-accent-400), var(--urb-accent-700));
-    box-shadow: var(--shadow-sm);
-  }
-  .topbar__actions { display: flex; align-items: center; gap: var(--space-3); }
 
-  .hero { padding: var(--space-6) 0 var(--space-10); }
-  .hero h1 { font-size: var(--text-3xl); letter-spacing: -0.02em; }
-  .hero p { color: var(--color-text-secondary); margin-top: var(--space-3); max-width: 40rem; }
-
-  /* Abschnitte */
-  .section { margin-top: var(--space-12); }
-  .section > h2 {
-    font-size: var(--text-xl);
-    margin-bottom: var(--space-2);
-    display: flex; align-items: center; gap: var(--space-3);
+  .sg-aero__blob--azure {
+    top: -24vmax;
+    left: -18vmax;
+    background: radial-gradient(circle at 50% 50%,
+                  color-mix(in srgb, var(--tone-azure) 68%, transparent) 0%,
+                  transparent 68%);
+    animation-duration: 68s;
   }
-  .section > h2::before {
-    content: ""; width: 4px; height: 1.1em;
-    background: var(--color-accent); border-radius: var(--radius-full);
-  }
-  .section__hint { color: var(--color-text-muted); font-size: var(--text-sm); margin-bottom: var(--space-5); }
 
-  /* Beispiel-Container: rahmt Komponenten-Demos ein */
-  .demo {
-    padding: var(--space-6);
-    border-radius: var(--radius-lg);
-    display: flex; flex-wrap: wrap; gap: var(--space-4);
+  .sg-aero__blob--indigo {
+    top: -14vmax;
+    right: -22vmax;
+    background: radial-gradient(circle at 50% 50%,
+                  color-mix(in srgb, var(--tone-indigo) 62%, transparent) 0%,
+                  transparent 68%);
+    animation-name: sg-drift-rev;
+    animation-duration: 88s;
+    animation-delay: -12s;
+  }
+
+  .sg-aero__blob--amber {
+    bottom: -28vmax;
+    left: 6vmax;
+    background: radial-gradient(circle at 50% 50%,
+                  color-mix(in srgb, var(--tone-amber) 55%, transparent) 0%,
+                  transparent 66%);
+    animation-duration: 96s;
+    animation-delay: -24s;
+  }
+
+  .sg-aero__blob--jade {
+    bottom: -22vmax;
+    right: -16vmax;
+    background: radial-gradient(circle at 50% 50%,
+                  color-mix(in srgb, var(--tone-jade) 55%, transparent) 0%,
+                  transparent 66%);
+    animation-name: sg-drift-rev;
+    animation-duration: 80s;
+    animation-delay: -36s;
+  }
+
+  /* Lichtmuster: zwei sehr flache Streifenraster plus ein
+     diagonaler Lichtverlauf. Es gibt der Flaeche eine Struktur,
+     an der die Unschaerfe des Glases erst ablesbar wird. */
+  .sg-aero__veil {
+    position: absolute;
+    inset: -12%;
+    background:
+      repeating-linear-gradient(112deg,
+        color-mix(in srgb, var(--glass-highlight) 70%, transparent) 0 1px,
+        transparent 1px 54px),
+      repeating-linear-gradient(22deg,
+        color-mix(in srgb, var(--glass-highlight) 38%, transparent) 0 1px,
+        transparent 1px 108px),
+      linear-gradient(160deg,
+        color-mix(in srgb, var(--glass-highlight) 45%, transparent) 0%,
+        transparent 55%);
+    opacity: 0.65;
+    will-change: transform;
+    animation: sg-veil 120s var(--ease) infinite alternate;
+  }
+
+  /* Im Dunkeln sind die Markentoene heller, deshalb weniger Deckung. */
+  [data-theme="dark"] .sg-aero__blob { opacity: 0.34; }
+  [data-theme="dark"] .sg-aero__veil { opacity: 0.85; }
+
+  @keyframes sg-drift {
+    from { transform: translate3d(0, 0, 0) scale(1); }
+    to   { transform: translate3d(7vmax, 5vmax, 0) scale(1.14); }
+  }
+  @keyframes sg-drift-rev {
+    from { transform: translate3d(0, 0, 0) scale(1.12); }
+    to   { transform: translate3d(-6vmax, -4vmax, 0) scale(1); }
+  }
+  /* Wechselnde Richtung (alternate), damit der Lauf ohne Sprung schliesst. */
+  @keyframes sg-veil {
+    from { transform: translate3d(-1.5%, -1%, 0); }
+    to   { transform: translate3d(1.5%, 1%, 0); }
+  }
+
+  /* Feste Dauern brauchen laut Vertrag einen eigenen Riegel. */
+  @media (prefers-reduced-motion: reduce) {
+    .sg-aero__blob,
+    .sg-aero__veil { animation: none; }
+  }
+
+
+  /* ============================================================
+     2. SEITENGERUEST
+     ============================================================ */
+
+  /* Sanftes Springen der Ankernavigation, nur wenn erwuenscht. */
+  @media (prefers-reduced-motion: no-preference) {
+    :root { scroll-behavior: smooth; }
+  }
+
+  .sg-page {
+    position: relative;
+    z-index: var(--z-raised);
+    padding-bottom: var(--space-12);
+  }
+
+  /* ---------- Klebende Kopfzeile ---------- */
+  .sg-top {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky);
+    padding-block: var(--space-3);
+  }
+  .sg-top__bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-4);
+  }
+  .sg-brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+  .sg-brand__text { display: flex; flex-direction: column; line-height: var(--leading-tight); }
+  .sg-brand__name {
+    font-weight: var(--font-bold);
+    font-size: var(--text-lg);
+    letter-spacing: var(--tracking-tight);
+    white-space: nowrap;
+  }
+  .sg-brand__claim {
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+  }
+  .sg-top__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex: 0 0 auto;
+    margin-inline-start: auto;
+  }
+
+  /* ---------- Sprungnavigation ---------- */
+  .sg-nav {
+    order: 3;
+    flex: 1 1 100%;
+    display: flex;
+    gap: var(--space-1);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+    padding-block: var(--space-1);
+  }
+  .sg-nav a {
+    flex: 0 0 auto;
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-full);
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background var(--dur-fast) var(--ease),
+                color var(--dur-fast) var(--ease);
+  }
+  .sg-nav a:hover {
+    background: var(--color-accent-soft);
+    color: var(--color-accent);
+  }
+
+  @media (min-width: 64rem) {
+    .sg-nav {
+      order: 0;
+      flex: 1 1 auto;
+      min-width: 0;
+      justify-content: center;
+    }
+  }
+
+  /* ---------- Aufmacher ---------- */
+  .sg-hero { padding: var(--space-10) 0 var(--space-4); max-width: 48rem; }
+  .sg-hero h1 {
+    font-size: var(--text-3xl);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
+  }
+  .sg-hero__lead {
+    margin-top: var(--space-4);
+    font-size: var(--text-lg);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-normal);
+  }
+  .sg-hero__meta {
+    margin-top: var(--space-5);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
     align-items: center;
   }
-  .demo--col { flex-direction: column; align-items: stretch; }
-  .demo--grid { display: grid; gap: var(--space-5); grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
 
-  /* Farbfelder */
-  .swatches { display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); }
-  .swatch { border-radius: var(--radius-md); overflow: hidden; border: var(--border-thin) solid var(--color-border); font-size: var(--text-xs); }
-  .swatch__color { height: 56px; }
-  .swatch__label { padding: var(--space-2); background: var(--color-surface); }
-  .swatch__label b { display: block; }
-  .swatch__label span { color: var(--color-text-muted); font-family: var(--font-mono); font-size: 11px; }
+  /* ---------- Abschnitte ---------- */
+  .sg-section {
+    margin-top: var(--space-16);
+    scroll-margin-top: var(--space-16);
+  }
+  .sg-section > h2 {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--text-2xl);
+    letter-spacing: var(--tracking-tight);
+  }
+  .sg-section > h2::before {
+    content: "";
+    flex: 0 0 auto;
+    width: 6px;
+    height: 1.05em;
+    border-radius: var(--radius-full);
+    background: var(--gradient-accent);
+    box-shadow: var(--shadow-glow);
+  }
+  .sg-section__no {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: var(--font-normal);
+    color: var(--color-text-muted);
+  }
+  .sg-lead {
+    margin: var(--space-3) 0 var(--space-6);
+    max-width: 54rem;
+    font-size: var(--text-sm);
+    line-height: var(--leading-normal);
+    color: var(--color-text-secondary);
+  }
+  .sg-sub {
+    margin: var(--space-8) 0 var(--space-3);
+    font-size: var(--text-xs);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+  .sg-sub--top { margin-top: 0; }
 
-  /* Semantische Rollen-Kacheln */
-  .roles { display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
-  .role { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3); border-radius: var(--radius-md); border: var(--border-thin) solid var(--color-border); background: var(--color-surface); font-size: var(--text-sm); }
-  .role .dot { width: 20px; height: 20px; border-radius: var(--radius-sm); border: var(--border-thin) solid var(--color-border); flex-shrink: 0; }
+  /* ---------- Fussleiste ---------- */
+  .sg-footer {
+    position: relative;
+    z-index: var(--z-raised);
+    margin: var(--space-12) auto var(--space-10);
+    padding: var(--space-6);
+    border-radius: var(--radius-xl);
+    text-align: center;
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+  }
 
-  /* Typo-Skala */
-  .type-row { display: flex; align-items: baseline; gap: var(--space-4); padding: var(--space-3) 0; border-bottom: var(--border-thin) solid var(--color-border); }
-  .type-row:last-child { border-bottom: none; }
-  .type-row .meta { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--color-text-muted); width: 8rem; flex-shrink: 0; }
 
-  /* Spacing-Skala */
-  .space-row { display: flex; align-items: center; gap: var(--space-4); font-size: var(--text-sm); }
-  .space-row .bar { height: 16px; background: var(--color-accent); border-radius: var(--radius-sm); }
-  .space-row .meta { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--color-text-muted); width: 9rem; }
+  /* ============================================================
+     3. BEISPIELRAHMEN
+     Fasst eine Gruppe von Komponenten ein. Traegt in der Regel
+     zusaetzlich .glass aus components.css.
+     ============================================================ */
 
-  /* Radius- & Schatten-Demos */
-  .box-row { display: flex; flex-wrap: wrap; gap: var(--space-5); }
-  .box {
-    width: 108px; height: 84px;
-    display: flex; align-items: flex-end; justify-content: center;
+  .sg-demo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-6);
+    border-radius: var(--radius-xl);
+  }
+  .sg-demo--col {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .sg-demo--grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    align-items: start;
+    gap: var(--space-5);
+  }
+  .sg-demo--flush { padding: 0; overflow: hidden; }
+  .sg-demo--top { align-items: flex-start; }
+  .sg-demo + .sg-demo { margin-top: var(--space-4); }
+
+  /* Kleine Beschriftung unter oder neben einem Beispiel. */
+  .sg-tag {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+  .sg-note {
+    font-size: var(--text-sm);
+    line-height: var(--leading-normal);
+    color: var(--color-text-secondary);
+  }
+  .sg-cell { display: flex; flex-direction: column; gap: var(--space-2); }
+
+
+  /* ============================================================
+     4. BUEHNE FUER GLAS
+     Kraeftiges, gestreiftes Farbmuster hinter den Glasflaechen.
+     Erst daran wird sichtbar, dass wirklich unscharf gerechnet
+     wird und nicht nur eine helle Flaeche liegt.
+     ============================================================ */
+
+  .sg-stage {
+    position: relative;
+    overflow: hidden;
+    padding: var(--space-8);
+    border-radius: var(--radius-2xl);
+    border: var(--border-thin) solid var(--color-border);
+    /* Die Streifen liegen bewusst ganz oben. Erst an einer harten,
+       gleichmaessigen Kante ist zu sehen, dass wirklich unscharf
+       gerechnet wird und nicht nur eine helle Flaeche liegt. */
+    background:
+      repeating-linear-gradient(45deg,
+        color-mix(in srgb, var(--color-text) 22%, transparent) 0 6px,
+        transparent 6px 20px),
+      repeating-linear-gradient(-45deg,
+        color-mix(in srgb, var(--glass-highlight) 60%, transparent) 0 3px,
+        transparent 3px 26px),
+      radial-gradient(circle at 14% 22%,
+        color-mix(in srgb, var(--tone-azure) 80%, transparent), transparent 52%),
+      radial-gradient(circle at 84% 14%,
+        color-mix(in srgb, var(--tone-indigo) 75%, transparent), transparent 48%),
+      radial-gradient(circle at 24% 88%,
+        color-mix(in srgb, var(--tone-jade) 70%, transparent), transparent 48%),
+      radial-gradient(circle at 92% 84%,
+        color-mix(in srgb, var(--tone-amber) 75%, transparent), transparent 48%),
+      var(--color-surface-2);
+  }
+  .sg-stage__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: var(--space-5);
+  }
+  .sg-stage__cell {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--space-2);
+    min-height: 9rem;
+    padding: var(--space-5);
+  }
+  .sg-stage__cell b { font-size: var(--text-base); }
+  .sg-stage__cell span {
+    font-size: var(--text-xs);
+    line-height: var(--leading-normal);
+    color: var(--color-text-secondary);
+  }
+
+
+  /* ============================================================
+     5. FARBFELDER UND ROLLEN
+     ============================================================ */
+
+  .sg-palette + .sg-palette { margin-top: var(--space-6); }
+  .sg-palette__head {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    margin-bottom: var(--space-2);
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+  }
+  .sg-palette__head span {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: var(--font-normal);
+    color: var(--color-text-muted);
+  }
+  .sg-swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(4.25rem, 1fr));
+    gap: var(--space-2);
+  }
+  .sg-swatch {
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    border: var(--border-thin) solid var(--color-border);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-sm);
+  }
+  .sg-swatch__color { display: block; height: 3.25rem; }
+  .sg-swatch__step {
+    display: block;
+    padding: var(--space-1) var(--space-2);
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+  }
+
+  .sg-roles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: var(--space-3);
+  }
+  .sg-role {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    border: var(--border-thin) solid var(--color-border);
+    background: var(--color-surface);
+  }
+  .sg-role__chip {
+    flex: 0 0 auto;
+    width: 2rem;
+    height: 2rem;
+    border-radius: var(--radius-sm);
+    border: var(--border-thin) solid var(--color-border-strong);
+    box-shadow: var(--shadow-sm);
+  }
+  .sg-role__name {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+    overflow-wrap: anywhere;
+  }
+
+  /* ---------- Markentoene ---------- */
+  .sg-tones {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: var(--space-4);
+  }
+  .sg-tone {
+    --sg-tone: var(--color-accent);
+    --sg-tone-soft: var(--color-accent-soft);
+    --sg-tone-line: var(--color-accent-line);
+    --sg-tone-grad: var(--gradient-accent);
+    padding: var(--space-4);
+    border-radius: var(--radius-lg);
+    border: var(--border-thin) solid var(--sg-tone-line);
+    background: var(--sg-tone-soft);
+  }
+  .sg-tone__grad {
+    height: 3.5rem;
+    border-radius: var(--radius-md);
+    background: var(--sg-tone-grad);
+    box-shadow: inset 0 -1px 0 var(--glass-lowlight),
+      var(--shadow-sm);
+  }
+  .sg-tone__name {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    color: var(--sg-tone);
+  }
+  .sg-tone__keys {
+    display: grid;
+    gap: var(--space-1);
+    margin-top: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+  }
+  /* Die Modifikatoren stehen bewusst nach der Grundregel, damit sie gewinnen. */
+  .sg-tone--azure  { --sg-tone: var(--tone-azure);  --sg-tone-soft: var(--tone-azure-soft);  --sg-tone-line: var(--tone-azure-line);  --sg-tone-grad: var(--tone-azure-grad); }
+  .sg-tone--indigo { --sg-tone: var(--tone-indigo); --sg-tone-soft: var(--tone-indigo-soft); --sg-tone-line: var(--tone-indigo-line); --sg-tone-grad: var(--tone-indigo-grad); }
+  .sg-tone--amber  { --sg-tone: var(--tone-amber);  --sg-tone-soft: var(--tone-amber-soft);  --sg-tone-line: var(--tone-amber-line);  --sg-tone-grad: var(--tone-amber-grad); }
+  .sg-tone--jade   { --sg-tone: var(--tone-jade);   --sg-tone-soft: var(--tone-jade-soft);   --sg-tone-line: var(--tone-jade-line);   --sg-tone-grad: var(--tone-jade-grad); }
+  .sg-tone--rose   { --sg-tone: var(--tone-rose);   --sg-tone-soft: var(--tone-rose-soft);   --sg-tone-line: var(--tone-rose-line);   --sg-tone-grad: var(--tone-rose-grad); }
+  .sg-tone--slate  { --sg-tone: var(--tone-slate);  --sg-tone-soft: var(--tone-slate-soft);  --sg-tone-line: var(--tone-slate-line);  --sg-tone-grad: var(--tone-slate-grad); }
+
+  /* Verlaeufe des Systems */
+  .sg-grads {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: var(--space-4);
+  }
+  .sg-grad {
+    height: 4.5rem;
+    display: flex;
+    align-items: flex-end;
+    padding: var(--space-3);
+    border-radius: var(--radius-lg);
+    box-shadow: inset 0 -1px 0 var(--glass-lowlight),
+      var(--shadow-md);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-on-accent);
+  }
+
+
+  /* ============================================================
+     6. SKALEN
+     ============================================================ */
+
+  .sg-type__row {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-5);
+    padding: var(--space-3) 0;
+    border-bottom: var(--border-thin) solid var(--color-border);
+  }
+  .sg-type__row:last-child { border-bottom: none; }
+  .sg-type__key {
+    flex: 0 0 9rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+  .sg-type__sample { min-width: 0; overflow-wrap: anywhere; }
+
+  .sg-scale { display: grid; gap: var(--space-2); }
+  .sg-scale__row { display: flex; align-items: center; gap: var(--space-4); }
+  .sg-scale__key {
+    flex: 0 0 11rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+  .sg-scale__bar {
+    height: 0.75rem;
+    border-radius: var(--radius-full);
+    background: var(--gradient-accent);
+    
+  }
+
+  .sg-boxes { display: flex; flex-wrap: wrap; gap: var(--space-4); }
+  .sg-box {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    width: 6.75rem;
+    height: 5rem;
     padding: var(--space-2);
     background: var(--color-surface);
     border: var(--border-thin) solid var(--color-border);
-    font-size: var(--text-xs); color: var(--color-text-muted); font-family: var(--font-mono);
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
   }
 
-  .stack { display: flex; flex-direction: column; gap: var(--space-3); }
-  .row   { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+  .sg-layers {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: var(--space-2);
+  }
+  .sg-layer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    border: var(--border-thin) solid var(--color-border);
+    background: var(--color-surface);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-secondary);
+  }
+  .sg-layer b { color: var(--color-accent); }
 
-  footer.page-footer {
-    margin-top: var(--space-16);
-    padding-top: var(--space-6);
-    border-top: var(--border-thin) solid var(--color-border);
-    color: var(--color-text-muted); font-size: var(--text-sm);
+
+  /* ============================================================
+     7. ICON-UEBERSICHT
+     ============================================================ */
+
+  .sg-icons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+  .sg-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--space-2);
+    width: 5.5rem;
     text-align: center;
   }
+  .sg-icon__glyph {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+  }
+  .sg-icon__name {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    overflow-wrap: anywhere;
+  }
+  .sg-sizes { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--space-5); }
 
-  @media (max-width: 640px) {
-    .type-row { flex-direction: column; gap: var(--space-1); }
-    .type-row .meta { width: auto; }
+
+  /* ============================================================
+     8. KLEINE BILDSCHIRME
+     ============================================================ */
+
+  @media (max-width: 40rem) {
+    .sg-type__row { flex-direction: column; gap: var(--space-1); align-items: flex-start; }
+    .sg-type__key { flex: 0 0 auto; }
+    .sg-scale__row { flex-wrap: wrap; }
+    .sg-scale__key { flex: 0 0 100%; }
+    .sg-demo, .sg-stage { padding: var(--space-4); }
+    .sg-hero { padding-top: var(--space-6); }
   }
 }
