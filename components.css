@@ -1286,15 +1286,14 @@
 }
 
 /* Schraege Streifen des Fortschrittsbalkens, eine Kachelbreite */
+@keyframes urb-stripes {
+  to { background-position-x: 1rem; }
 }
 
 @keyframes urb-indeterminate {
   0%   { transform: translateX(-110%); }
   100% { transform: translateX(260%); }
 }
-
-@keyframes urb-stripes {
-  to { background-position-x: 1rem; }
 
 @keyframes urb-shimmer {
   from { background-position: 150% 0; }

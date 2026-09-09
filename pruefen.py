@@ -4,7 +4,7 @@
 Aufruf:  python3 pruefen.py
 
 Prueft fuenf Dinge:
-  1. CSS-Syntax grob (Kommentare geschlossen, Klammern balanciert)
+  1. CSS-Struktur: Verschachtelung der Bloecke, nicht nur ihre Bilanz
   2. Die eiserne Regel: kein --urb-* und kein roher Farbwert ausserhalb tokens.css
   3. Jedes benutzte Token ist definiert oder hat einen Fallback
   4. Das Icon-Sprite in index.html ist auf dem Stand von icons.svg
@@ -27,16 +27,73 @@ def entkommentiert(css):
     return re.sub(r"/\*.*?\*/", " ", css, flags=re.S)
 
 
+def entkommentiert_zeilentreu(css):
+    """Wie entkommentiert, behaelt aber die Zeilenumbrueche, damit
+    gemeldete Zeilennummern zur Datei passen."""
+    return re.sub(r"/\*.*?\*/",
+                  lambda m: "\n" * m.group(0).count("\n"), css, flags=re.S)
+
+
 # ============================================================
 #  1 bis 4: Struktur und Regeln
 # ============================================================
 def pruefe_syntax(name, css):
+    """Struktur statt Bilanz.
+
+    Blosses Zaehlen findet den haeufigsten Fall nicht: eine schliessende
+    Klammer zu viel an einer Stelle und eine zu wenig an einer anderen
+    gleichen sich in der Summe aus. Deshalb wird die Verschachtelung
+    Zeichen fuer Zeichen verfolgt.
+    """
     if css.count("/*") != css.count("*/"):
-        fehler.append(f"{name}: Kommentare unbalanciert ({css.count('/*')} auf, {css.count('*/')} zu)")
-    body = re.sub(r'"[^"]*"|\'[^\']*\'', '""', entkommentiert(css))
-    for auf, zu, was in (("{", "}", "geschweifte"), ("(", ")", "runde")):
-        if body.count(auf) != body.count(zu):
-            fehler.append(f"{name}: {was} Klammern unbalanciert ({body.count(auf)} auf, {body.count(zu)} zu)")
+        fehler.append(f"{name}: Kommentare unbalanciert "
+                      f"({css.count('/*')} auf, {css.count('*/')} zu)")
+
+    code = re.sub(r'"[^"]*"|\'[^\']*\'', '""', entkommentiert_zeilentreu(css))
+
+    stapel = []          # offene Bloecke als (Zeile, Kopfzeile)
+    zeile = 1
+    for i, c in enumerate(code):
+        if c == "\n":
+            zeile += 1
+        elif c == "{":
+            kopf = code.rfind("\n", 0, i)
+            stapel.append((zeile, code[kopf + 1:i].strip()[:60]))
+        elif c == "}":
+            if not stapel:
+                fehler.append(f"{name}:{zeile}: ueberzaehlige schliessende Klammer")
+            else:
+                stapel.pop()
+
+    for z, kopf in stapel:
+        fehler.append(f"{name}:{z}: Block nicht geschlossen -> {kopf!r}")
+
+    # Eine At-Regel darf nicht in einem @keyframes stehen. Genau das
+    # passiert, wenn ein @keyframes-Block seine Klammer verliert: der
+    # naechste verschwindet stillschweigend darin.
+    tiefe, in_keyframes = 0, None
+    zeile = 1
+    for m in re.finditer(r"\n|@[a-z-]+|[{}]", code):
+        t = m.group(0)
+        if t == "\n":
+            zeile += 1
+        elif t == "{":
+            tiefe += 1
+        elif t == "}":
+            tiefe -= 1
+            if in_keyframes is not None and tiefe <= in_keyframes[0]:
+                in_keyframes = None
+        elif t.startswith("@"):
+            if in_keyframes is not None:
+                fehler.append(f"{name}:{zeile}: {t} steht im @keyframes von "
+                              f"Zeile {in_keyframes[1]}, dort fehlt eine schliessende Klammer")
+            elif t == "@keyframes":
+                in_keyframes = (tiefe, zeile)
+
+    for auf, zu, was in (("(", ")", "runde"),):
+        if code.count(auf) != code.count(zu):
+            fehler.append(f"{name}: {was} Klammern unbalanciert "
+                          f"({code.count(auf)} auf, {code.count(zu)} zu)")
 
 
 HEX = re.compile(r"#[0-9a-fA-F]{3,8}\b")

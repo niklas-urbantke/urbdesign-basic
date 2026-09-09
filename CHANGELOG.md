@@ -1,5 +1,37 @@
 # Änderungen
 
+## v0.3.3 — Klammerfehler in components.css (2026-09-09)
+
+Von einem anderen Team gemeldet: Der Build brach an `components.css:1289` ab.
+Der Bericht war in jedem Punkt richtig.
+
+**Der Fehler.** Nach dem Kommentar „Schraege Streifen des Fortschrittsbalkens"
+stand eine überzählige schließende Klammer, und `@keyframes urb-stripes` fehlte
+seine eigene. Dadurch verschluckte `urb-stripes` das nachfolgende `urb-shimmer`,
+womit die Skeleton-Animation still undefiniert blieb. Browser parsen so etwas
+fehlertolerant, PostCSS bricht ab.
+
+**Wie er entstand.** Bei der Wiederherstellung des Fortschrittsbalkens in v0.3
+habe ich `@keyframes urb-stripes` mit dem Muster `\{[^}]*\}` gesucht. Das
+matcht nur bis zur ersten schließenden Klammer, ein `@keyframes` enthält aber
+verschachtelte Blöcke. Der Fehler passierte zweimal: beim Entfernen blieb die
+äußere Klammer stehen, beim Wiedereinsetzen fehlte sie.
+
+**Warum die Prüfung ihn nicht fand.** `pruefen.py` hat Klammern gezählt. Eine zu
+viel und eine zu wenig gleichen sich in der Summe aus, die Bilanz stimmte mit
+268 zu 268.
+
+- Die Klammerbilanz ist durch eine echte Strukturverfolgung ersetzt: Die
+  Verschachtelung wird Zeichen für Zeichen mitgeführt, gemeldet werden
+  überzählige schließende Klammern mit Zeile und nicht geschlossene Blöcke mit
+  ihrer Kopfzeile
+- Zusätzlich fällt auf, wenn eine At-Regel in einem `@keyframes` steht, denn
+  genau das passiert, wenn dessen Klammer fehlt
+- Kommentare werden für diese Prüfung zeilentreu entfernt, damit die gemeldeten
+  Zeilennummern zur Datei passen
+- Gegengetestet mit dem exakt nachgebauten Fehler: die Bilanzprüfung meldet ihn
+  nicht, die Strukturprüfung nennt Zeile 1289 und 1291
+
 ## v0.3.2 — Kantensaum endgültig behoben (2026-09-09)
 
 Der andersfarbige Saum an den Glanz-Kacheln war zurück, laut Rückmeldung an
