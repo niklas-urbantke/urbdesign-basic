@@ -1,5 +1,103 @@
 # Änderungen
 
+## v0.3.2 — Kantensaum endgültig behoben (2026-09-09)
+
+Der andersfarbige Saum an den Glanz-Kacheln war zurück, laut Rückmeldung an
+mehreren Stellen. Die globale Regel `background-origin: border-box` aus v0.2.3
+stand unverändert im base-Layer, wurde aber ausgehebelt.
+
+**Ursache: die Kurzschreibweise.** `background:` setzt alle Untereigenschaften auf
+ihren Anfangswert zurück, auch `background-origin`. Jede Stelle, die
+`background: var(--gradient-accent)` schrieb, hat damit `padding-box`
+wiederhergestellt. In `index.html` standen diese Angaben zusätzlich als
+`style`-Attribut, also mit der höchsten Spezifität überhaupt.
+
+- 13 Vorkommen in `index.html`, `showcase.css`, `icons.css` und `components.css`
+  auf `background-color:` beziehungsweise `background-image:` umgestellt
+- `pruefen.py` meldet die Kurzform ab jetzt als Fehler, in CSS-Dateien und in
+  `style`-Attributen. Gegengetestet: eine testweise eingebaute Kurzform wird
+  gefunden
+- Die Regel steht im README unter „Zweite Regel: keine background-Kurzform"
+
+Ein Fix, den eine einzelne Zeile an anderer Stelle stillschweigend aufhebt, ist
+kein Fix. Deshalb diesmal mit Prüfung statt nur mit Korrektur.
+
+## v0.3.1 — Rahmen bei Hinweisen, ruhiger Hintergrund (2026-09-09)
+
+**Hinweise mit Rahmen rundherum.** `.alert` hatte einen dünnen Rahmen in einer
+eigenen Linienfarbe plus eine dickere farbige Kante nur an der Startseite. Der
+Rahmen läuft jetzt in `--border-med` und in der Tonfarbe des Zustands um die
+ganze Fläche, genau wie beim Toast. Das Token `--alert-line` wird damit nicht
+mehr gebraucht und ist aus allen vier Varianten entfernt.
+
+**Linienmuster im Hintergrund entfernt.** Zur Frage, ob es zum Theme gehört:
+nein. Es lag in `showcase.css`, also im Layout der Demo-Seite, nicht im
+Design-System. `tokens.css` und `components.css` waren nie beteiligt.
+
+An seiner Stelle steht jetzt ein ruhiger Verlauf über zwei Markentöne:
+
+```css
+background-image: linear-gradient(150deg,
+  color-mix(in srgb, var(--tone-azure) 16%, var(--color-bg)) 0%,
+  var(--color-bg) 46%,
+  color-mix(in srgb, var(--tone-indigo) 14%, var(--color-bg)) 100%);
+```
+
+Weil sowohl die Markentöne als auch `--color-bg` pro Theme umgestellt werden,
+passt sich der Verlauf ohne eigene Dark-Regel an. Entfallen sind damit vier
+animierte Farbblobs, zwei Streifenraster, drei Keyframe-Animationen und der
+zugehörige `prefers-reduced-motion`-Riegel, dazu fünf Elemente in `index.html`.
+
+Nebenwirkung, bewusst in Kauf genommen: Ein glatter Verlauf gibt der Unschärfe
+weniger zu verwischen, der Glaseffekt ist auf der Seite dadurch dezenter. Die
+Bühne im Abschnitt „Glas" behält ihr Streifenmuster, dort soll die Unschärfe
+ablesbar bleiben.
+
+## v0.3 — Kantiger, flacher, satteres Rot (2026-09-09)
+
+Fünf Vorgaben umgesetzt.
+
+**Weniger runde Ecken.** Die Radienskala rückt deutlich zusammen:
+
+| Token | vorher | nachher |
+|---|---|---|
+| `--radius-sm` | 6px | 3px |
+| `--radius-md` | 10px | 5px |
+| `--radius-lg` | 14px | 8px |
+| `--radius-xl` | 20px | 11px |
+| `--radius-2xl` | 28px | 14px |
+
+`--radius-full` bleibt, damit Switch, Avatar und Chip rund bleiben.
+
+**Mehr Rot beim Löschen.** Die Rose-Palette hatte einen Pinkstich (500 war
+`#e42a4c`). Alle zehn Stufen sind auf ein satteres, reineres Rot gezogen
+(500 jetzt `#e21f0c`). Das wirkt auf alles, was Gefahr signalisiert: den
+Löschen-Button, das Papierkorb-Icon, Fehler-Toasts und Alerts. Kontrast bleibt
+über AA: `--color-danger` auf Fläche 7.0:1 im Light, 7.0:1 im Dark.
+
+**Keine Farbverläufe in Bedienelementen.** Betroffen sind Schaltflächen (auch
+die Löschen-Variante), Switch, Schieberegler, Segmented Control, Menüeintrag,
+Pagination, aktive Lasche, Meter und Stepper. Alle sind jetzt einfarbig. Auch
+die dunkle Abstufung zur Unterkante in `--btn-img` ist weg, Tiefe kommt nur noch
+aus Kante und Schatten. `--btn-grad` bleibt als Erweiterungspunkt und steht auf
+`none`.
+
+Verläufe behalten allein die nicht bedienbaren Flächen: Fortschrittsbalken
+(auf Wunsch ausgenommen), Avatar, Icon-Kachel und die Demo-Bühne.
+
+**Umschalter einheitlich.** Checkbox, Radio, Switch, Schieberegler, Segmented
+Control und aktive Lasche zeigen jetzt alle auf `--color-accent`, flach und in
+derselben Farbe. Vorher hatte der Switch einen Verlauf, die Checkbox über
+`accent-color` eine Volltonfarbe, dadurch sahen gleichwertige Umschalter
+unterschiedlich aus.
+
+**Toast mit Rand rundherum.** Der farbige Rand lag nur an der Startkante
+(`border-inline-start`). Er läuft jetzt in `--border-med` um die ganze Fläche,
+in der Farbe des jeweiligen Zustands.
+
+Nachgezogen: zwei Beschreibungen in `index.html`, die noch von Verläufen an
+Schaltflächen und an der aktiven Lasche sprachen.
+
 ## v0.2.3 — Kantenregel verallgemeinert (2026-09-09)
 
 Auf Rückmeldung: Die Glanz-Beispiele im Abschnitt „Glas" hatten unten und links

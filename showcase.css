@@ -17,116 +17,23 @@
 @layer showcase {
 
   /* ============================================================
-     1. AERO-HINTERGRUND
-     Vier weiche Farbblobs (Azure, Indigo, Amber, Jade) liegen
-     fest im Blickfeld und wandern sehr langsam. Darueber ein
-     feines Lichtmuster. Ohne diese Ebene bliebe jede Glasflaeche
-     wirkungslos, denn Unschaerfe braucht etwas zum Verwischen.
+     1. HINTERGRUND
+     Ein ruhiger Verlauf aus zwei Markentoenen, ohne Muster und
+     ohne Bewegung. Er passt sich ueber die Tokens von selbst an
+     Hell und Dunkel an, weil sowohl die Toene als auch --color-bg
+     pro Theme umgestellt werden.
      ============================================================ */
 
   .sg-aero {
     position: fixed;
     inset: 0;
     z-index: var(--z-base);
-    overflow: hidden;
     pointer-events: none;
-  }
-
-  .sg-aero__blob {
-    position: absolute;
-    width: 62vmax;
-    height: 62vmax;
-    border-radius: var(--radius-full);
-    filter: blur(70px);
-    opacity: 0.45;
-    will-change: transform;
-    animation: sg-drift 72s var(--ease) infinite alternate;
-  }
-
-  .sg-aero__blob--azure {
-    top: -24vmax;
-    left: -18vmax;
-    background: radial-gradient(circle at 50% 50%,
-                  color-mix(in srgb, var(--tone-azure) 68%, transparent) 0%,
-                  transparent 68%);
-    animation-duration: 68s;
-  }
-
-  .sg-aero__blob--indigo {
-    top: -14vmax;
-    right: -22vmax;
-    background: radial-gradient(circle at 50% 50%,
-                  color-mix(in srgb, var(--tone-indigo) 62%, transparent) 0%,
-                  transparent 68%);
-    animation-name: sg-drift-rev;
-    animation-duration: 88s;
-    animation-delay: -12s;
-  }
-
-  .sg-aero__blob--amber {
-    bottom: -28vmax;
-    left: 6vmax;
-    background: radial-gradient(circle at 50% 50%,
-                  color-mix(in srgb, var(--tone-amber) 55%, transparent) 0%,
-                  transparent 66%);
-    animation-duration: 96s;
-    animation-delay: -24s;
-  }
-
-  .sg-aero__blob--jade {
-    bottom: -22vmax;
-    right: -16vmax;
-    background: radial-gradient(circle at 50% 50%,
-                  color-mix(in srgb, var(--tone-jade) 55%, transparent) 0%,
-                  transparent 66%);
-    animation-name: sg-drift-rev;
-    animation-duration: 80s;
-    animation-delay: -36s;
-  }
-
-  /* Lichtmuster: zwei sehr flache Streifenraster plus ein
-     diagonaler Lichtverlauf. Es gibt der Flaeche eine Struktur,
-     an der die Unschaerfe des Glases erst ablesbar wird. */
-  .sg-aero__veil {
-    position: absolute;
-    inset: -12%;
-    background:
-      repeating-linear-gradient(112deg,
-        color-mix(in srgb, var(--glass-highlight) 70%, transparent) 0 1px,
-        transparent 1px 54px),
-      repeating-linear-gradient(22deg,
-        color-mix(in srgb, var(--glass-highlight) 38%, transparent) 0 1px,
-        transparent 1px 108px),
-      linear-gradient(160deg,
-        color-mix(in srgb, var(--glass-highlight) 45%, transparent) 0%,
-        transparent 55%);
-    opacity: 0.65;
-    will-change: transform;
-    animation: sg-veil 120s var(--ease) infinite alternate;
-  }
-
-  /* Im Dunkeln sind die Markentoene heller, deshalb weniger Deckung. */
-  [data-theme="dark"] .sg-aero__blob { opacity: 0.34; }
-  [data-theme="dark"] .sg-aero__veil { opacity: 0.85; }
-
-  @keyframes sg-drift {
-    from { transform: translate3d(0, 0, 0) scale(1); }
-    to   { transform: translate3d(7vmax, 5vmax, 0) scale(1.14); }
-  }
-  @keyframes sg-drift-rev {
-    from { transform: translate3d(0, 0, 0) scale(1.12); }
-    to   { transform: translate3d(-6vmax, -4vmax, 0) scale(1); }
-  }
-  /* Wechselnde Richtung (alternate), damit der Lauf ohne Sprung schliesst. */
-  @keyframes sg-veil {
-    from { transform: translate3d(-1.5%, -1%, 0); }
-    to   { transform: translate3d(1.5%, 1%, 0); }
-  }
-
-  /* Feste Dauern brauchen laut Vertrag einen eigenen Riegel. */
-  @media (prefers-reduced-motion: reduce) {
-    .sg-aero__blob,
-    .sg-aero__veil { animation: none; }
+    background-color: var(--color-bg);
+    background-image: linear-gradient(150deg,
+      color-mix(in srgb, var(--tone-azure) 16%, var(--color-bg)) 0%,
+      var(--color-bg) 46%,
+      color-mix(in srgb, var(--tone-indigo) 14%, var(--color-bg)) 100%);
   }
 
 
@@ -209,7 +116,7 @@
                 color var(--dur-fast) var(--ease);
   }
   .sg-nav a:hover {
-    background: var(--color-accent-soft);
+    background-color: var(--color-accent-soft);
     color: var(--color-accent);
   }
 
@@ -261,7 +168,7 @@
     width: 6px;
     height: 1.05em;
     border-radius: var(--radius-full);
-    background: var(--gradient-accent);
+    background-image: var(--gradient-accent);
     box-shadow: var(--shadow-glow);
   }
   .sg-section__no {
@@ -358,7 +265,7 @@
     /* Die Streifen liegen bewusst ganz oben. Erst an einer harten,
        gleichmaessigen Kante ist zu sehen, dass wirklich unscharf
        gerechnet wird und nicht nur eine helle Flaeche liegt. */
-    background:
+    background-image:
       repeating-linear-gradient(45deg,
         color-mix(in srgb, var(--color-text) 22%, transparent) 0 6px,
         transparent 6px 20px),
@@ -424,7 +331,7 @@
     overflow: hidden;
     border-radius: var(--radius-md);
     border: var(--border-thin) solid var(--color-border);
-    background: var(--color-surface);
+    background-color: var(--color-surface);
     box-shadow: var(--shadow-sm);
   }
   .sg-swatch__color { display: block; height: 3.25rem; }
@@ -449,7 +356,7 @@
     padding: var(--space-3);
     border-radius: var(--radius-md);
     border: var(--border-thin) solid var(--color-border);
-    background: var(--color-surface);
+    background-color: var(--color-surface);
   }
   .sg-role__chip {
     flex: 0 0 auto;
@@ -480,12 +387,12 @@
     padding: var(--space-4);
     border-radius: var(--radius-lg);
     border: var(--border-thin) solid var(--sg-tone-line);
-    background: var(--sg-tone-soft);
+    background-color: var(--sg-tone-soft);
   }
   .sg-tone__grad {
     height: 3.5rem;
     border-radius: var(--radius-md);
-    background: var(--sg-tone-grad);
+    background-image: var(--sg-tone-grad);
     box-shadow: inset 0 -1px 0 var(--glass-lowlight),
       var(--shadow-sm);
   }
@@ -565,7 +472,7 @@
   .sg-scale__bar {
     height: 0.75rem;
     border-radius: var(--radius-full);
-    background: var(--gradient-accent);
+    background-image: var(--gradient-accent);
     
   }
 
@@ -577,7 +484,7 @@
     width: 6.75rem;
     height: 5rem;
     padding: var(--space-2);
-    background: var(--color-surface);
+    background-color: var(--color-surface);
     border: var(--border-thin) solid var(--color-border);
     text-align: center;
     font-family: var(--font-mono);
@@ -598,7 +505,7 @@
     padding: var(--space-2) var(--space-3);
     border-radius: var(--radius-md);
     border: var(--border-thin) solid var(--color-border);
-    background: var(--color-surface);
+    background-color: var(--color-surface);
     font-family: var(--font-mono);
     font-size: var(--text-xs);
     color: var(--color-text-secondary);

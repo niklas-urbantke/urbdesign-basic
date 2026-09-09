@@ -69,6 +69,17 @@ Daraus folgt die einzige Regel, die das System zusammenhält:
 > In `components.css`, `showcase.css`, `icons.css` und in jedem `style`-Attribut
 > stehen **niemals `--urb-*` und niemals rohe Farbwerte** (`#hex`, `rgb()`, `hsl()`).
 
+### Zweite Regel: keine `background`-Kurzform
+
+> Statt `background:` immer `background-color:` oder `background-image:` schreiben.
+
+Die Kurzform setzt alle Untereigenschaften zurück, darunter `background-origin`.
+Das System stellt diese im base-Layer auf `border-box`, weil ein Verlauf sonst nur
+über die innere Fläche aufgespannt und im Bereich des Rahmens mit seiner Endfarbe
+fortgesetzt wird. Sichtbar wird das als andersfarbiger Saum an Flächen mit Verlauf
+und Rahmen, oben hell und unten oder links dunkel. Ein einziges `background:`
+genügt, um den Effekt zurückzuholen. `pruefen.py` meldet jede Kurzform.
+
 Die Regel ist mit einem Befehl prüfbar. Sie muss ohne Treffer bleiben:
 
 ```bash
@@ -144,8 +155,10 @@ fünf Zutaten, die zusammen den Aero-Eindruck ergeben:
 Varianten: `.glass--strong` (deckender, für Dialoge), `.glass--sunken` (eingelassen,
 für Eingabefelder), `.glass--glow` (farbiger Schein).
 
-Damit Glas überhaupt wirkt, braucht die Seite einen Hintergrund mit Struktur. Die
-Demo-Seite legt dafür weiche farbige Verlaufsflächen hinter den Inhalt.
+Damit Glas überhaupt wirkt, braucht die Seite etwas hinter sich. Die Demo-Seite
+legt dafür einen ruhigen Verlauf aus zwei Markentönen hinter den Inhalt, der sich
+über die Tokens von selbst an Hell und Dunkel anpasst. Je mehr Struktur der
+Hintergrund hat, desto deutlicher ist die Unschärfe ablesbar.
 
 ## Icons
 

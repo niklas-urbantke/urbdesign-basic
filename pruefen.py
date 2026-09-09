@@ -61,6 +61,14 @@ for name in CSS_DATEIEN:
         for m in muster.finditer(code):
             fehler.append(f"{name}:{code[:m.start()].count(chr(10)) + 1}: {label} -> {m.group(0)}")
 
+    # Die Kurzform "background:" setzt background-origin auf padding-box
+    # zurueck und hebt damit die Regel aus dem base-Layer auf. Folge ist
+    # ein andersfarbiger Saum an Flaechen mit Verlauf und Rahmen.
+    for m in re.finditer(r"(?:^|[;{\s])background:\s", code):
+        fehler.append(f"{name}:{code[:m.start()].count(chr(10)) + 1}: "
+                      f"Kurzform 'background:' setzt background-origin zurueck, "
+                      f"bitte background-color oder background-image verwenden")
+
     lokal = set(re.findall(r"(--[a-zA-Z0-9-]+)\s*:", code))
     for m in re.finditer(r"var\(\s*(--[a-zA-Z0-9-]+)\s*(,)?", code):
         name_t, hat_fallback = m.group(1), bool(m.group(2))
@@ -82,6 +90,9 @@ for name in HTML_DATEIEN:
         zeile = roh[:pos].count("\n") + 1
         if HEX.search(inhalt) or FUNC.search(inhalt):
             fehler.append(f"{name}:{zeile}: roher Farbwert im style-Attribut")
+        if re.search(r"(?:^|;\s*)background:\s", inhalt):
+            fehler.append(f"{name}:{zeile}: Kurzform 'background:' im style-Attribut "
+                          f"setzt background-origin zurueck")
         if URB.search(inhalt) and not (0 < pos < ende):
             fehler.append(f"{name}:{zeile}: --urb-* im style-Attribut ausserhalb des Farbabschnitts")
 

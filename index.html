@@ -177,15 +177,9 @@
 </svg>
 
 
-  <!-- Aero-Hintergrund: farbige Blobs und ein feines Lichtmuster.
+  <!-- Seitenhintergrund: ruhiger Verlauf aus zwei Markentoenen.
        Rein dekorativ, deshalb vor der Vorlesesoftware verborgen. -->
-  <div class="sg-aero" aria-hidden="true">
-    <span class="sg-aero__blob sg-aero__blob--azure"></span>
-    <span class="sg-aero__blob sg-aero__blob--indigo"></span>
-    <span class="sg-aero__blob sg-aero__blob--amber"></span>
-    <span class="sg-aero__blob sg-aero__blob--jade"></span>
-    <span class="sg-aero__veil"></span>
-  </div>
+  <div class="sg-aero" aria-hidden="true"></div>
 
   <!-- ============================================================
        KOPFZEILE: klebende Glas-Toolbar
@@ -588,9 +582,9 @@
         über ein beliebiges Element, ohne den Rest der Glasoptik.
       </p>
       <div class="sg-demo glass">
-        <div class="sheen sg-box" style="border-radius:var(--radius-lg);background:var(--gradient-accent);color:var(--color-on-accent)">sheen</div>
-        <div class="sheen sg-box" style="border-radius:var(--radius-lg);background:var(--gradient-warm);color:var(--color-on-accent)">sheen</div>
-        <div class="sheen sg-box" style="border-radius:var(--radius-lg);background:var(--gradient-cool);color:var(--color-on-accent)">sheen</div>
+        <div class="sheen sg-box" style="border-radius:var(--radius-lg);background-image:var(--gradient-accent);color:var(--color-on-accent)">sheen</div>
+        <div class="sheen sg-box" style="border-radius:var(--radius-lg);background-image:var(--gradient-warm);color:var(--color-on-accent)">sheen</div>
+        <div class="sheen sg-box" style="border-radius:var(--radius-lg);background-image:var(--gradient-cool);color:var(--color-on-accent)">sheen</div>
       </div>
 
       <h3 class="sg-sub">Die Stellschrauben</h3>
@@ -613,7 +607,7 @@
     <section class="sg-section" id="buttons">
       <h2><span class="sg-section__no">05</span> Buttons</h2>
       <p class="sg-lead">
-        Jede Schaltfläche trägt einen leichten Verlauf und eine feine Kante unten.
+        Schaltflächen sind einfarbig, ohne Verlauf und ohne Glanz. Tiefe kommt nur aus der feinen Kante unten und dem Schatten.
         Beim Überfahren wandert der Glanz, beim Drücken sinkt die Fläche ein.
       </p>
 
@@ -1000,7 +994,7 @@
           <button class="tab" type="button" role="tab" id="tab-3" aria-selected="false" aria-controls="panel-3" tabindex="-1">Einstellungen</button>
         </div>
         <div role="tabpanel" id="panel-1" aria-labelledby="tab-1">
-          <p class="sg-note">Die aktive Lasche trägt einen Verlaufs-Unterstrich und einen leichten Schein.</p>
+          <p class="sg-note">Die aktive Lasche trägt einen Unterstrich in der Akzentfarbe.</p>
         </div>
         <div role="tabpanel" id="panel-2" aria-labelledby="tab-2" hidden></div>
         <div role="tabpanel" id="panel-3" aria-labelledby="tab-3" hidden></div>
@@ -1458,7 +1452,7 @@
 
       <h3 class="sg-sub sg-sub--top">Codeblock</h3>
       <pre class="code-block">.btn--primary {
-  background: var(--gradient-accent);
+  background-image: var(--gradient-accent);
   color: var(--color-on-accent);
   box-shadow: inset 0 1px 0 var(--glass-highlight),
               inset 0 -1px 0 var(--glass-lowlight),

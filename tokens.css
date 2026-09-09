@@ -94,16 +94,16 @@
     --urb-jade-900: #073827;
 
     /* ---------- Rose: Rot fuer Fehler und Gefahr ---------- */
-    --urb-rose-50:  #ffeef0;
-    --urb-rose-100: #ffdadf;
-    --urb-rose-200: #ffb8c1;
-    --urb-rose-300: #ff8697;
-    --urb-rose-400: #f9536d;
-    --urb-rose-500: #e42a4c;
-    --urb-rose-600: #c11739;
-    --urb-rose-700: #a11330;
-    --urb-rose-800: #86142d;
-    --urb-rose-900: #71152a;
+    --urb-rose-50:  #fff0ee;
+    --urb-rose-100: #ffdbd6;
+    --urb-rose-200: #ffb6ac;
+    --urb-rose-300: #ff8073;
+    --urb-rose-400: #f94534;
+    --urb-rose-500: #e21f0c;
+    --urb-rose-600: #c01608;
+    --urb-rose-700: #9e1207;
+    --urb-rose-800: #83140b;
+    --urb-rose-900: #6d150d;
 
     /* ============================================================
        Nicht-farbige Skalen.
@@ -147,11 +147,11 @@
     --space-16: 4rem;     /* 64 */
 
     /* ---------- Radien ---------- */
-    --radius-sm:   6px;
-    --radius-md:   10px;
-    --radius-lg:   14px;
-    --radius-xl:   20px;
-    --radius-2xl:  28px;
+    --radius-sm:   3px;
+    --radius-md:   5px;
+    --radius-lg:   8px;
+    --radius-xl:   11px;
+    --radius-2xl:  14px;
     --radius-full: 9999px;
 
     /* ---------- Rahmen ---------- */

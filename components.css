@@ -179,9 +179,10 @@
      ------------------------------------------------------------
      Lokale Variablen wie ueberall im System:
        --btn-bg  Flaeche, --btn-fg Text, --btn-bd Kante,
-       --btn-grad zusaetzlicher Farbverlauf, --btn-shadow Schatten.
-     Der Aero-Aufbau steckt in --btn-img: oben der Glanz, darunter
-     eine Abdunklung zur Unterkante, ganz unten der Farbverlauf.
+       --btn-shadow Schatten.
+     Schaltflaechen sind bewusst einfarbig: kein Verlauf, keine
+     Glanzebene. --btn-grad bleibt als Erweiterungspunkt bestehen
+     und steht standardmaessig auf none.
      ============================================================ */
 
   .btn {
@@ -191,8 +192,7 @@
     --btn-bd: var(--color-border-strong);
     --btn-grad: none;
     --btn-shadow: var(--shadow-sm);
-    --btn-img: linear-gradient(180deg, transparent 45%, var(--glass-lowlight)),
-               var(--btn-grad);
+    --btn-img: var(--btn-grad);
 
     position: relative;
     display: inline-flex;
@@ -229,7 +229,6 @@
     --btn-bg-hover: var(--color-accent-hover);
     --btn-fg: var(--color-on-accent);
     --btn-bd: transparent;
-    --btn-grad: var(--gradient-accent);
   }
   .btn--primary:hover  { --btn-shadow: var(--shadow-glow); }
   .btn--primary:active { --btn-bg: var(--color-accent-active); }
@@ -244,15 +243,11 @@
   .btn--ghost { --btn-bg: transparent; --btn-bd: transparent; --btn-shadow: none; --btn-img: none; box-shadow: none; }
   .btn--ghost:hover { --btn-shadow: none; box-shadow: none; }
 
-  /* Verlauf aus --color-danger: aufgehellt oben links, voll unten rechts. */
   .btn--danger {
     --btn-bg: var(--color-danger);
     --btn-bg-hover: color-mix(in srgb, var(--color-danger) 88%, var(--color-text));
     --btn-fg: var(--color-on-accent);
     --btn-bd: transparent;
-    --btn-grad: linear-gradient(140deg,
-                  color-mix(in srgb, var(--color-danger) 80%, var(--glass-highlight)),
-                  var(--color-danger));
   }
 
   /* Glas-Schaltflaeche: Unschaerfe, Kanten und beide Ebenen kommen
@@ -355,7 +350,6 @@
     width: 2.75rem;
     height: 1.5rem;
     background-color: var(--glass-tint-sunken);
-    background-image: linear-gradient(180deg, var(--glass-lowlight), transparent 60%);
     border: var(--border-thin) solid var(--color-border-strong);
     border-radius: var(--radius-full);
     box-shadow: inset 0 1px 3px var(--glass-lowlight);
@@ -378,7 +372,6 @@
   }
   .switch input:checked + .switch__track {
     background-color: var(--color-accent);
-    background-image: var(--gradient-accent);
     border-color: transparent;
     box-shadow: 0 0 12px var(--glass-glow);
   }
@@ -394,7 +387,7 @@
     appearance: none;
     width: 100%;
     height: 1.25rem;
-    background: transparent;
+    background-color: transparent;
     accent-color: var(--color-accent);
     cursor: pointer;
   }
@@ -507,25 +500,23 @@
   .alert {
     --alert-tone: var(--color-text-secondary);
     --alert-bg: var(--color-surface-2);
-    --alert-line: var(--color-border);
     display: flex;
     gap: var(--space-3);
     padding: var(--space-3) var(--space-4);
     font-size: var(--text-sm);
     color: var(--color-text);
     background-color: var(--alert-bg);
-    border: var(--border-thin) solid var(--alert-line);
-    border-inline-start: var(--border-med) solid var(--alert-tone);
+    border: var(--border-med) solid var(--alert-tone);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
   }
   .alert__icon  { flex-shrink: 0; color: var(--alert-tone); margin-top: 1px; }
   .alert__title { display: block; font-weight: var(--font-semibold); color: var(--alert-tone); margin-bottom: 2px; }
   .alert p { color: var(--color-text); }
-  .alert--info    { --alert-tone: var(--color-info);    --alert-bg: var(--color-info-soft);    --alert-line: var(--color-info-line); }
-  .alert--success { --alert-tone: var(--color-success); --alert-bg: var(--color-success-soft); --alert-line: var(--color-success-line); }
-  .alert--warning { --alert-tone: var(--color-warning); --alert-bg: var(--color-warning-soft); --alert-line: var(--color-warning-line); }
-  .alert--danger  { --alert-tone: var(--color-danger);  --alert-bg: var(--color-danger-soft);  --alert-line: var(--color-danger-line); }
+  .alert--info    { --alert-tone: var(--color-info);    --alert-bg: var(--color-info-soft); }
+  .alert--success { --alert-tone: var(--color-success); --alert-bg: var(--color-success-soft); }
+  .alert--warning { --alert-tone: var(--color-warning); --alert-bg: var(--color-warning-soft); }
+  .alert--danger  { --alert-tone: var(--color-danger);  --alert-bg: var(--color-danger-soft); }
 
   /* Toast: Glasflaeche aus Abschnitt 1, der Ton sitzt nur auf der
      Kante und im Symbol, damit der Text auf Glas lesbar bleibt. */
@@ -540,8 +531,8 @@
     max-width: 24rem;
     padding: var(--space-3) var(--space-4);
     font-size: var(--text-sm);
-    border-inline-start-width: var(--border-med);
-    border-inline-start-color: var(--toast-tone);
+    border-width: var(--border-med);
+    border-color: var(--toast-tone);
     animation: urb-rise var(--dur-med) var(--ease-out) both;
   }
   .toast > .icon { flex-shrink: 0; color: var(--toast-tone); margin-top: 1px; }
@@ -653,7 +644,7 @@
     inset-inline: var(--space-3);
     bottom: calc(-1 * var(--border-thin));
     height: var(--border-med);
-    background-image: var(--gradient-accent);
+    background-color: var(--color-accent);
     border-radius: var(--radius-full);
     opacity: 0;
     transform: scaleX(0.4);
@@ -697,8 +688,6 @@
   .segmented__item.is-selected {
     color: var(--color-on-accent);
     background-color: var(--color-accent);
-    background-image: var(--gradient-accent);
-    box-shadow: var(--shadow-glow);
   }
 
   .table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: var(--text-sm); }
@@ -754,7 +743,7 @@
   .menu__item[aria-selected="true"],
   .menu__item.is-selected {
     color: var(--color-on-accent);
-    background-image: var(--gradient-accent);
+    background-color: var(--color-accent);
     
   }
   .menu__sep {
@@ -852,9 +841,7 @@
   .page-btn.is-active {
     color: var(--color-on-accent);
     background-color: var(--color-accent);
-    background-image: var(--gradient-accent);
     border-color: transparent;
-    box-shadow: var(--shadow-glow);
   }
 
   .breadcrumb { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); font-size: var(--text-sm); color: var(--color-text-muted); }
@@ -940,8 +927,8 @@
     background-color: var(--step-line);
   }
   .step:last-child::after { content: none; }
-  .step--done    { --step-fill: var(--gradient-cool);   --step-line: transparent; --step-fg: var(--color-text-secondary); }
-  .step--current { --step-fill: var(--gradient-accent); --step-line: transparent; --step-fg: var(--color-text); font-weight: var(--font-medium); }
+  .step--done    { --step-fill: var(--color-success);   --step-line: transparent; --step-fg: var(--color-text-secondary); }
+  .step--current { --step-fill: var(--color-accent); --step-line: transparent; --step-fg: var(--color-text); font-weight: var(--font-medium); }
   .step--current::before { box-shadow: var(--shadow-glow); }
 
 
@@ -1013,7 +1000,7 @@
     height: 100%;
     width: var(--meter-value, 0%);
     max-width: 100%;
-    background-image: var(--tone-grad, var(--gradient-cool));
+    background-color: var(--tone-fill, var(--color-accent));
     border-radius: inherit;
     transition: width var(--dur-med) var(--ease);
   }
@@ -1279,7 +1266,8 @@
 
   @media (prefers-reduced-motion: reduce) {
     .spinner,
-    .btn.is-loading::after,
+    .btn.is-loading::after { animation: none; }
+
     .progress__bar::after { animation: none; }
 
     .progress--indeterminate .progress__bar { animation: none; width: 100%; opacity: 0.6; }
@@ -1298,14 +1286,15 @@
 }
 
 /* Schraege Streifen des Fortschrittsbalkens, eine Kachelbreite */
-@keyframes urb-stripes {
-  to { background-position-x: 1rem; }
 }
 
 @keyframes urb-indeterminate {
   0%   { transform: translateX(-110%); }
   100% { transform: translateX(260%); }
 }
+
+@keyframes urb-stripes {
+  to { background-position-x: 1rem; }
 
 @keyframes urb-shimmer {
   from { background-position: 150% 0; }
