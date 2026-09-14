@@ -1,57 +1,119 @@
 /* ============================================================
-   Design-Tokens
-   Zwei Stufen:
-   1. Primitive  – reine Rohwerte der Palette (ohne Bedeutung)
-   2. Semantisch – geben den Primitiven eine Rolle; NUR diese
-                   werden von Komponenten benutzt.
-   Ein Theme (Light/Dark) biegt ausschliesslich die semantische
-   Ebene um – kein Komponentencode aendert sich.
+   urbDesign – Design-Tokens
+   Theme: "Aero Plasma"  (Vista/Windows-7-Glas, modern gelesen)
+
+   ZWEI EBENEN, EINE REGEL
+   -----------------------
+   1. Primitive   --urb-*    Rohwerte der Palette und der Skalen.
+                             Fest verdrahtet, aendern sich NIE mit dem Theme.
+   2. Semantisch  alles      Rollen: --color-*, --glass-*, --shadow-*,
+                  ohne urb-  --space-*, --radius-* ... Nur diese benutzen
+                             die Komponenten.
+
+   REGEL FUER KOMPONENTEN (components.css):
+     Niemals --urb-* und niemals ein roher Farbwert (#hex, rgb(), hsl()).
+   Pruefbar mit:
+     grep -nE '#[0-9a-fA-F]{3}|rgba?\(|hsla?\(|--urb-' components.css
+   Diese Suche muss ohne Treffer bleiben.
+
+   Farbwelt: helles Blau (Azure) als Akzent, Lila-Indigo als Partner im
+   Verlauf, Orange-Gelb (Amber) und dunkles Gruen (Jade) als weitere
+   Markentoene. Alle vier sind zugleich Status- und Icon-Farben.
    ============================================================ */
 
 @layer tokens {
 
-  /* ---------- 1. Primitive: Rohwerte ---------- */
+  /* ============================================================
+     1. PRIMITIVE – Rohwerte
+     ============================================================ */
   :root {
-    /* Neutrale Graustufen (leicht kuehl) */
-    --urb-neutral-50:  #f8fafc;
-    --urb-neutral-100: #f1f5f9;
-    --urb-neutral-200: #e2e8f0;
-    --urb-neutral-300: #cbd5e1;
-    --urb-neutral-400: #94a3b8;
-    --urb-neutral-500: #64748b;
-    --urb-neutral-600: #475569;
-    --urb-neutral-700: #334155;
-    --urb-neutral-800: #1e293b;
-    --urb-neutral-900: #0f172a;
-    --urb-neutral-950: #020617;
 
-    /* Akzent: Violett-Indigo */
-    --urb-accent-50:  #f2f0ff;
-    --urb-accent-100: #e6e2ff;
-    --urb-accent-200: #cfc7ff;
-    --urb-accent-300: #b0a3fc;
-    --urb-accent-400: #8f7cf7;
-    --urb-accent-500: #7359f0;
-    --urb-accent-600: #5f43e0;
-    --urb-accent-700: #4d34bd;
-    --urb-accent-800: #3f2c99;
-    --urb-accent-900: #342778;
+    /* ---------- Absolut ---------- */
+    --urb-white: #ffffff;
+    --urb-black: #000000;
 
-    /* Status */
-    --urb-green-500:  #16a34a;
-    --urb-green-600:  #15803d;
-    --urb-amber-500:  #d97706;
-    --urb-amber-600:  #b45309;
-    --urb-red-500:    #dc2626;
-    --urb-red-600:    #b91c1c;
-    --urb-blue-500:   #2563eb;
-    --urb-blue-600:   #1d4ed8;
+    /* ---------- Neutral: Slate (kuehl, blaustichig – Aero-Grundton) ---------- */
+    --urb-slate-50:  #f5f8fc;
+    --urb-slate-100: #e9eff7;
+    --urb-slate-200: #d4dfec;
+    --urb-slate-300: #b3c4da;
+    --urb-slate-400: #8296b3;
+    --urb-slate-500: #5b6e8c;
+    --urb-slate-600: #43536b;
+    --urb-slate-700: #313e52;
+    --urb-slate-800: #202b3b;
+    --urb-slate-900: #131c29;
+    --urb-slate-950: #080d16;
 
-    /* ---------- Nicht-farbige Skalen (theme-unabhaengig) ---------- */
+    /* ---------- Azure: helles Blau (Primaerakzent) ---------- */
+    --urb-azure-50:  #eaf6ff;
+    --urb-azure-100: #d0ebff;
+    --urb-azure-200: #a6d8ff;
+    --urb-azure-300: #6fc0ff;
+    --urb-azure-400: #38a5fb;
+    --urb-azure-500: #1189ec;
+    --urb-azure-600: #036bc7;
+    --urb-azure-700: #0455a0;
+    --urb-azure-800: #0a4783;
+    --urb-azure-900: #0d3c6d;
 
-    /* Schrift */
-    --font-sans: "Open Sans", "Segoe UI", Selawik, system-ui, -apple-system, sans-serif;
-    --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", ui-monospace, monospace;
+    /* ---------- Indigo: Lila-Indigo (Verlaufspartner) ---------- */
+    --urb-indigo-50:  #f0eeff;
+    --urb-indigo-100: #e3dfff;
+    --urb-indigo-200: #cbc3ff;
+    --urb-indigo-300: #ac9dfd;
+    --urb-indigo-400: #8f79f8;
+    --urb-indigo-500: #7457ef;
+    --urb-indigo-600: #6039db;
+    --urb-indigo-700: #4f2cb8;
+    --urb-indigo-800: #422696;
+    --urb-indigo-900: #382278;
+
+    /* ---------- Amber: Orange-Gelb ---------- */
+    --urb-amber-50:  #fff8e6;
+    --urb-amber-100: #ffefc2;
+    --urb-amber-200: #ffdd85;
+    --urb-amber-300: #ffc63d;
+    --urb-amber-400: #fbaf0b;
+    --urb-amber-500: #e59200;
+    --urb-amber-600: #c06f02;
+    --urb-amber-700: #9a5109;
+    --urb-amber-800: #7e400e;
+    --urb-amber-900: #6a350f;
+
+    /* ---------- Jade: dunkles Gruen ---------- */
+    --urb-jade-50:  #e7f8ef;
+    --urb-jade-100: #c8efd9;
+    --urb-jade-200: #97ddba;
+    --urb-jade-300: #5dc294;
+    --urb-jade-400: #2fa473;
+    --urb-jade-500: #14855a;
+    --urb-jade-600: #0a6a48;
+    --urb-jade-700: #08553b;
+    --urb-jade-800: #094430;
+    --urb-jade-900: #073827;
+
+    /* ---------- Rose: Rot fuer Fehler und Gefahr ---------- */
+    --urb-rose-50:  #fff0ee;
+    --urb-rose-100: #ffdbd6;
+    --urb-rose-200: #ffb6ac;
+    --urb-rose-300: #ff8073;
+    --urb-rose-400: #f94534;
+    --urb-rose-500: #e21f0c;
+    --urb-rose-600: #c01608;
+    --urb-rose-700: #9e1207;
+    --urb-rose-800: #83140b;
+    --urb-rose-900: #6d150d;
+
+    /* ============================================================
+       Nicht-farbige Skalen.
+       Sie haben nur eine Ebene: keine Rolle, kein Theme-Wechsel.
+       Komponenten benutzen sie unter diesen Namen direkt.
+       ============================================================ */
+
+    /* ---------- Schrift ---------- */
+    --font-sans: "Segoe UI Variable", "Segoe UI", "Open Sans", system-ui, -apple-system, sans-serif;
+    --font-mono: "JetBrains Mono", "Cascadia Code", "Fira Code", ui-monospace, monospace;
 
     --text-xs:   0.75rem;   /* 12 */
     --text-sm:   0.8125rem; /* 13 */
@@ -69,7 +131,10 @@
     --leading-tight:  1.25;
     --leading-normal: 1.55;
 
-    /* Abstaende (4er-Raster) */
+    --tracking-tight: -0.02em;
+    --tracking-wide:   0.04em;
+
+    /* ---------- Abstaende (4er-Raster) ---------- */
     --space-1:  0.25rem;  /* 4  */
     --space-2:  0.5rem;   /* 8  */
     --space-3:  0.75rem;  /* 12 */
@@ -81,109 +146,361 @@
     --space-12: 3rem;     /* 48 */
     --space-16: 4rem;     /* 64 */
 
-    /* Radien (ausgewogen) */
-    --radius-sm:   6px;
-    --radius-md:   8px;
-    --radius-lg:   12px;
-    --radius-xl:   16px;
+    /* ---------- Radien ---------- */
+    --radius-sm:   3px;
+    --radius-md:   5px;
+    --radius-lg:   8px;
+    --radius-xl:   11px;
+    --radius-2xl:  14px;
     --radius-full: 9999px;
 
-    /* Grenzbreite */
+    /* ---------- Rahmen ---------- */
     --border-thin: 1px;
+    --border-med:  2px;
 
-    /* Uebergaenge */
-    --ease: cubic-bezier(0.4, 0, 0.2, 1);
-    --dur-fast: 120ms;
-    --dur-med:  200ms;
+    /* ---------- Bewegung ---------- */
+    --ease:      cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-out:  cubic-bezier(0.16, 1, 0.3, 1);
+    --dur-fast:  120ms;
+    --dur-med:   220ms;
+    --dur-slow:  420ms;
 
-    /* Glas-Unschaerfe */
-    --glass-blur: 14px;
+    /* ---------- Ebenen (z-index) ---------- */
+    --z-base:     0;
+    --z-raised:   10;
+    --z-sticky:   100;
+    --z-dropdown: 200;
+    --z-overlay:  300;
+    --z-modal:    400;
+    --z-toast:    500;
+    --z-tooltip:  600;
+
+    /* ---------- Glas: Kennwerte des Aero-Effekts ---------- */
+    --glass-blur:        18px;   /* Unschaerfe hinter der Flaeche      */
+    --glass-blur-strong: 30px;   /* fuer Overlays und Dialoge          */
+    --glass-saturate:    180%;   /* Farben hinter dem Glas anheben     */
+
+    /* Acryl-Rauschen (Fluent-Anleihe): feine Koernung auf der Glasflaeche.
+       Ein SVG mit feTurbulence als Data-URI, damit keine Bilddatei noetig ist. */
+    --urb-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+
+    /* Chevron des Auswahlfeldes, zweite erlaubte Ausnahme neben --urb-noise:
+       ein Muster, keine Theme-Farbe. Ein Winkel aus zwei Linien, Strichstaerke 2,
+       runde Enden. Zwei Fassungen, weil ein SVG als Hintergrundbild keine
+       currentColor kennt: dark fuer helle Themes, light fuer dunkle.
+       Die Raute des Farbwertes steht als %23, damit die Datei keine rohe
+       Raute in einer Wertposition traegt. */
+    --urb-chevron-dark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%23313e52' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 4.5 L6 8 L9.5 4.5'/%3E%3C/svg%3E");
+    --urb-chevron-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%23b3c4da' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2.5 4.5 L6 8 L9.5 4.5'/%3E%3C/svg%3E");
   }
 
-  /* ---------- 2. Semantisch: Light (Standard) ---------- */
+  /* ============================================================
+     Breakpoints
+     Bewusst KEINE Custom Properties: in @media wirken Variablen
+     nicht. Deshalb eine Konvention mit festen Werten, immer
+     min-width (mobil zuerst):
+
+       sm   40rem   entspricht  640px
+       md   52rem   entspricht  832px
+       lg   64rem   entspricht 1024px
+       xl   80rem   entspricht 1280px
+     ============================================================ */
+
+
+  /* ============================================================
+     2. SEMANTISCH – Light (Standard)
+     ============================================================ */
   :root,
   [data-theme="light"] {
     color-scheme: light;
 
-    /* Flaechen & Hintergrund */
-    --color-bg:            var(--urb-neutral-100);
-    --color-surface:       #ffffff;
-    --color-surface-2:     var(--urb-neutral-50);
-    --color-surface-glass: rgba(255, 255, 255, 0.62);
-    --color-glass-border:  rgba(255, 255, 255, 0.7);
+    /* ---------- Flaechen ---------- */
+    --color-bg:        var(--urb-slate-100);
+    --color-surface:   var(--urb-white);
+    --color-surface-2: var(--urb-slate-50);
+    --color-surface-3: var(--urb-slate-100);
 
-    /* Text */
-    --color-text:          var(--urb-neutral-900);
-    --color-text-secondary:var(--urb-neutral-600);
-    --color-text-muted:    var(--urb-neutral-400);
-    --color-text-inverted: var(--urb-neutral-50);
+    /* ---------- Text ---------- */
+    --color-text:           var(--urb-slate-900);
+    --color-text-secondary: var(--urb-slate-700);
+    --color-text-muted:     var(--urb-slate-600);
+    --color-text-inverted:  var(--urb-white);
 
-    /* Linien */
-    --color-border:        var(--urb-neutral-200);
-    --color-border-strong: var(--urb-neutral-300);
+    /* ---------- Linien ---------- */
+    --color-border:        var(--urb-slate-200);
+    --color-border-strong: var(--urb-slate-300);
 
-    /* Akzent / Aktion */
-    --color-accent:        var(--urb-accent-600);
-    --color-accent-hover:  var(--urb-accent-700);
-    --color-accent-active: var(--urb-accent-800);
-    --color-accent-soft:   var(--urb-accent-50);
-    --color-on-accent:     #ffffff;
-    --color-focus-ring:    rgba(115, 89, 240, 0.45);
+    /* ---------- Formularfelder ----------
+       select-arrow      eigener Pfeil des Auswahlfeldes, ersetzt den
+                         Systempfeil, damit .select und .input buendig sind
+       field-icon-inset  Abstand des fuehrenden Symbols vom Rand
+       field-icon-space  Platz, den ein fuehrendes Symbol im Feld belegt */
+    --select-arrow:     var(--urb-chevron-dark);
+    --field-icon-inset: var(--space-3);
+    --field-icon-space: 2.25rem;
 
-    /* Status – Vordergrund + weiche Flaechen */
-    --color-success:      var(--urb-green-600);
-    --color-success-soft: #dcfce7;
-    --color-warning:      var(--urb-amber-600);
-    --color-warning-soft: #fef3c7;
-    --color-danger:       var(--urb-red-600);
-    --color-danger-soft:  #fee2e2;
-    --color-info:         var(--urb-blue-600);
-    --color-info-soft:    #dbeafe;
+    /* ---------- Akzent ---------- */
+    --color-accent:        var(--urb-azure-600);
+    --color-accent-hover:  var(--urb-azure-700);
+    --color-accent-active: var(--urb-azure-800);
+    --color-accent-soft:   var(--urb-azure-50);
+    --color-accent-line:   var(--urb-azure-200);
+    --color-on-accent:     var(--urb-white);
 
-    /* Schatten */
-    --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
-    --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
-    --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.12);
-    --shadow-glass: 0 8px 32px rgba(52, 39, 120, 0.12);
+    /* Fokusring: gut sichtbarer, farbiger Ring statt harter Outline */
+    --color-focus-ring: color-mix(in srgb, var(--urb-azure-500) 55%, transparent);
+
+    /* ---------- Status ---------- */
+    --color-success:      var(--urb-jade-600);
+    --color-success-soft: var(--urb-jade-50);
+    --color-success-line: var(--urb-jade-200);
+
+    --color-warning:      var(--urb-amber-700);
+    --color-warning-soft: var(--urb-amber-50);
+    --color-warning-line: var(--urb-amber-200);
+
+    --color-danger:       var(--urb-rose-600);
+    --color-danger-soft:  var(--urb-rose-50);
+    --color-danger-line:  var(--urb-rose-200);
+
+    --color-info:         var(--urb-azure-600);
+    --color-info-soft:    var(--urb-azure-50);
+    --color-info-line:    var(--urb-azure-200);
+
+    /* ---------- Markentoene: die bunte Klaviatur ----------
+       Gedacht fuer Icons, Kacheln, Diagramme und Kategorien.
+       Jeder Ton hat: Vordergrund, weiche Flaeche, Linie, Verlauf. */
+    --tone-azure:        var(--urb-azure-600);
+    --tone-azure-soft:   var(--urb-azure-50);
+    --tone-azure-line:   var(--urb-azure-200);
+    --tone-azure-grad:   linear-gradient(140deg, var(--urb-azure-300), var(--urb-azure-600));
+
+    --tone-indigo:       var(--urb-indigo-600);
+    --tone-indigo-soft:  var(--urb-indigo-50);
+    --tone-indigo-line:  var(--urb-indigo-200);
+    --tone-indigo-grad:  linear-gradient(140deg, var(--urb-indigo-300), var(--urb-indigo-700));
+
+    --tone-amber:        var(--urb-amber-700);
+    --tone-amber-soft:   var(--urb-amber-50);
+    --tone-amber-line:   var(--urb-amber-200);
+    --tone-amber-grad:   linear-gradient(140deg, var(--urb-amber-300), var(--urb-amber-600));
+
+    --tone-jade:         var(--urb-jade-600);
+    --tone-jade-soft:    var(--urb-jade-50);
+    --tone-jade-line:    var(--urb-jade-200);
+    --tone-jade-grad:    linear-gradient(140deg, var(--urb-jade-300), var(--urb-jade-700));
+
+    --tone-rose:         var(--urb-rose-600);
+    --tone-rose-soft:    var(--urb-rose-50);
+    --tone-rose-line:    var(--urb-rose-200);
+    --tone-rose-grad:    linear-gradient(140deg, var(--urb-rose-300), var(--urb-rose-600));
+
+    --tone-slate:        var(--urb-slate-600);
+    --tone-slate-soft:   var(--urb-slate-100);
+    --tone-slate-line:   var(--urb-slate-300);
+    --tone-slate-grad:   linear-gradient(140deg, var(--urb-slate-300), var(--urb-slate-600));
+
+    /* ---------- Verlaeufe des Systems ---------- */
+    --gradient-accent: linear-gradient(140deg, var(--urb-azure-400), var(--urb-indigo-600));
+    --gradient-warm:   linear-gradient(140deg, var(--urb-amber-300), var(--urb-amber-600));
+    --gradient-cool:   linear-gradient(140deg, var(--urb-azure-300), var(--urb-jade-500));
+
+    /* ---------- Glas: die Rollen ----------
+       tint       Eigenfarbe der Glasflaeche
+       edge       Aussenkante
+       highlight  innerer Lichtrand oben (der Vista-Glanz)
+       lowlight   innerer Schattenrand unten
+       sheen      diagonaler Glanzverlauf ueber die Flaeche
+       noise      Koernung
+       glow       farbiger Schein hinter aktiven Flaechen */
+    --glass-tint:        color-mix(in srgb, var(--urb-white) 78%, transparent);
+    --glass-tint-strong: color-mix(in srgb, var(--urb-white) 90%, transparent);
+    --glass-tint-sunken: color-mix(in srgb, var(--urb-white) 58%, transparent);
+    /* Kante bewusst neutral statt weiss: ein heller Saum auf farbigen
+       Flaechen liest sich als Fehler, nicht als Glanz. */
+    --glass-edge:        color-mix(in srgb, var(--urb-slate-500) 22%, transparent);
+    --glass-highlight:   color-mix(in srgb, var(--urb-white) 60%, transparent);
+    --glass-lowlight:    color-mix(in srgb, var(--urb-slate-500) 14%, transparent);
+    /* Glanz: bewusst "to bottom" statt eines Winkels. Ein Winkel dreht sich
+       mit dem Seitenverhaeltnis, dadurch laeuft er auf breiten Flaechen quer
+       und schneidet mit einer sichtbaren Kante durch die Form. Der Verlauf
+       laeuft ausserdem weich bis 85% aus, damit keine Abbruchkante entsteht. */
+    --glass-sheen: linear-gradient(
+                     to bottom,
+                     color-mix(in srgb, var(--urb-white) 22%, transparent) 0%,
+                     color-mix(in srgb, var(--urb-white) 6%, transparent) 45%,
+                     transparent 85%);
+    --glass-noise-opacity: 0.22;
+    --glass-glow: color-mix(in srgb, var(--urb-azure-400) 40%, transparent);
+
+    /* ---------- Schatten ---------- */
+    --shadow-sm:    0 1px 2px color-mix(in srgb, var(--urb-slate-900) 8%, transparent);
+    --shadow-md:    0 4px 14px color-mix(in srgb, var(--urb-slate-900) 10%, transparent);
+    --shadow-lg:    0 14px 40px color-mix(in srgb, var(--urb-slate-900) 14%, transparent);
+    --shadow-glass: 0 10px 34px color-mix(in srgb, var(--urb-indigo-900) 16%, transparent);
+    --shadow-glow:  0 0 0 1px var(--glass-edge),
+                    0 8px 28px color-mix(in srgb, var(--urb-azure-500) 28%, transparent);
   }
 
-  /* ---------- 2. Semantisch: Dark ---------- */
+
+  /* ============================================================
+     2. SEMANTISCH – Dark
+     Aendert ausschliesslich diese Ebene. Kein Komponentencode.
+     ============================================================ */
   [data-theme="dark"] {
     color-scheme: dark;
 
-    --color-bg:            var(--urb-neutral-950);
-    --color-surface:       var(--urb-neutral-900);
-    --color-surface-2:     var(--urb-neutral-800);
-    --color-surface-glass: rgba(30, 41, 59, 0.55);
-    --color-glass-border:  rgba(255, 255, 255, 0.12);
+    --color-bg:        var(--urb-slate-950);
+    --color-surface:   var(--urb-slate-900);
+    --color-surface-2: var(--urb-slate-800);
+    --color-surface-3: var(--urb-slate-700);
 
-    --color-text:          var(--urb-neutral-100);
-    --color-text-secondary:var(--urb-neutral-400);
-    --color-text-muted:    var(--urb-neutral-500);
-    --color-text-inverted: var(--urb-neutral-900);
+    --color-text:           var(--urb-slate-50);
+    --color-text-secondary: var(--urb-slate-200);
+    --color-text-muted:     var(--urb-slate-300);
+    --color-text-inverted:  var(--urb-slate-950);
 
-    --color-border:        rgba(255, 255, 255, 0.10);
-    --color-border-strong: rgba(255, 255, 255, 0.18);
+    --color-border:        color-mix(in srgb, var(--urb-white) 12%, transparent);
+    --color-border-strong: color-mix(in srgb, var(--urb-white) 22%, transparent);
 
-    --color-accent:        var(--urb-accent-400);
-    --color-accent-hover:  var(--urb-accent-300);
-    --color-accent-active: var(--urb-accent-200);
-    --color-accent-soft:   rgba(115, 89, 240, 0.16);
-    --color-on-accent:     var(--urb-neutral-950);
-    --color-focus-ring:    rgba(143, 124, 247, 0.55);
+    /* Im Dunkeln zeichnet der Pfeil hell, sonst verschwindet er im Feld. */
+    --select-arrow: var(--urb-chevron-light);
 
-    --color-success:      #4ade80;
-    --color-success-soft: rgba(22, 163, 74, 0.18);
-    --color-warning:      #fbbf24;
-    --color-warning-soft: rgba(217, 119, 6, 0.18);
-    --color-danger:       #f87171;
-    --color-danger-soft:  rgba(220, 38, 38, 0.20);
-    --color-info:         #60a5fa;
-    --color-info-soft:    rgba(37, 99, 235, 0.20);
+    --color-accent:        var(--urb-azure-300);
+    --color-accent-hover:  var(--urb-azure-200);
+    --color-accent-active: var(--urb-azure-100);
+    --color-accent-soft:   color-mix(in srgb, var(--urb-azure-400) 18%, transparent);
+    --color-accent-line:   color-mix(in srgb, var(--urb-azure-300) 35%, transparent);
+    --color-on-accent:     var(--urb-slate-950);
 
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.45);
-    --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.55);
-    --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.45);
+    --color-focus-ring: color-mix(in srgb, var(--urb-azure-300) 60%, transparent);
+
+    --color-success:      var(--urb-jade-300);
+    --color-success-soft: color-mix(in srgb, var(--urb-jade-400) 20%, transparent);
+    --color-success-line: color-mix(in srgb, var(--urb-jade-300) 35%, transparent);
+
+    --color-warning:      var(--urb-amber-300);
+    --color-warning-soft: color-mix(in srgb, var(--urb-amber-400) 20%, transparent);
+    --color-warning-line: color-mix(in srgb, var(--urb-amber-300) 35%, transparent);
+
+    --color-danger:       var(--urb-rose-300);
+    --color-danger-soft:  color-mix(in srgb, var(--urb-rose-400) 22%, transparent);
+    --color-danger-line:  color-mix(in srgb, var(--urb-rose-300) 35%, transparent);
+
+    --color-info:         var(--urb-azure-300);
+    --color-info-soft:    color-mix(in srgb, var(--urb-azure-400) 20%, transparent);
+    --color-info-line:    color-mix(in srgb, var(--urb-azure-300) 35%, transparent);
+
+    --tone-azure:        var(--urb-azure-300);
+    --tone-azure-soft:   color-mix(in srgb, var(--urb-azure-400) 20%, transparent);
+    --tone-azure-line:   color-mix(in srgb, var(--urb-azure-300) 35%, transparent);
+    --tone-azure-grad:   linear-gradient(140deg, var(--urb-azure-200), var(--urb-azure-500));
+
+    --tone-indigo:       var(--urb-indigo-300);
+    --tone-indigo-soft:  color-mix(in srgb, var(--urb-indigo-400) 22%, transparent);
+    --tone-indigo-line:  color-mix(in srgb, var(--urb-indigo-300) 35%, transparent);
+    --tone-indigo-grad:  linear-gradient(140deg, var(--urb-indigo-200), var(--urb-indigo-500));
+
+    --tone-amber:        var(--urb-amber-300);
+    --tone-amber-soft:   color-mix(in srgb, var(--urb-amber-400) 20%, transparent);
+    --tone-amber-line:   color-mix(in srgb, var(--urb-amber-300) 35%, transparent);
+    --tone-amber-grad:   linear-gradient(140deg, var(--urb-amber-200), var(--urb-amber-500));
+
+    --tone-jade:         var(--urb-jade-300);
+    --tone-jade-soft:    color-mix(in srgb, var(--urb-jade-400) 22%, transparent);
+    --tone-jade-line:    color-mix(in srgb, var(--urb-jade-300) 35%, transparent);
+    --tone-jade-grad:    linear-gradient(140deg, var(--urb-jade-200), var(--urb-jade-500));
+
+    --tone-rose:         var(--urb-rose-300);
+    --tone-rose-soft:    color-mix(in srgb, var(--urb-rose-400) 22%, transparent);
+    --tone-rose-line:    color-mix(in srgb, var(--urb-rose-300) 35%, transparent);
+    --tone-rose-grad:    linear-gradient(140deg, var(--urb-rose-200), var(--urb-rose-500));
+
+    --tone-slate:        var(--urb-slate-300);
+    --tone-slate-soft:   color-mix(in srgb, var(--urb-slate-300) 16%, transparent);
+    --tone-slate-line:   color-mix(in srgb, var(--urb-slate-300) 30%, transparent);
+    --tone-slate-grad:   linear-gradient(140deg, var(--urb-slate-200), var(--urb-slate-500));
+
+    --gradient-accent: linear-gradient(140deg, var(--urb-azure-300), var(--urb-indigo-500));
+    --gradient-warm:   linear-gradient(140deg, var(--urb-amber-200), var(--urb-amber-500));
+    --gradient-cool:   linear-gradient(140deg, var(--urb-azure-200), var(--urb-jade-400));
+
+    /* Glas im Dunkeln: Tint aus dem Neutralton, Kanten deutlich schwaecher */
+    --glass-tint:        color-mix(in srgb, var(--urb-slate-800) 76%, transparent);
+    --glass-tint-strong: color-mix(in srgb, var(--urb-slate-800) 90%, transparent);
+    --glass-tint-sunken: color-mix(in srgb, var(--urb-slate-950) 62%, transparent);
+    --glass-edge:        color-mix(in srgb, var(--urb-white) 9%, transparent);
+    --glass-highlight:   color-mix(in srgb, var(--urb-white) 20%, transparent);
+    --glass-lowlight:    color-mix(in srgb, var(--urb-black) 30%, transparent);
+    --glass-sheen: linear-gradient(
+                     to bottom,
+                     color-mix(in srgb, var(--urb-white) 8%, transparent) 0%,
+                     color-mix(in srgb, var(--urb-white) 3%, transparent) 45%,
+                     transparent 85%);
+    --glass-noise-opacity: 0.30;
+    --glass-glow: color-mix(in srgb, var(--urb-azure-300) 34%, transparent);
+
+    --shadow-sm:    0 1px 2px color-mix(in srgb, var(--urb-black) 45%, transparent);
+    --shadow-md:    0 4px 14px color-mix(in srgb, var(--urb-black) 50%, transparent);
+    --shadow-lg:    0 14px 40px color-mix(in srgb, var(--urb-black) 60%, transparent);
+    --shadow-glass: 0 10px 34px color-mix(in srgb, var(--urb-black) 55%, transparent);
+    --shadow-glow:  0 0 0 1px var(--glass-edge),
+                    0 8px 28px color-mix(in srgb, var(--urb-azure-400) 30%, transparent);
+  }
+
+
+  /* ============================================================
+     3. SCHALTER: Glas und Verlaeufe abschaltbar
+     ------------------------------------------------------------
+     Beide Bloecke stehen bewusst hinter den Theme-Bloecken. Sie haben
+     dieselbe Spezifitaet wie [data-theme="dark"], gewinnen also nur ueber
+     die Reihenfolge. Die Attribute gelten unabhaengig vom Theme und lassen
+     sich auf jedem Element setzen, nicht nur an der Wurzel.
+
+     Warum das gebraucht wird: waehlt eine Anwendung einen einfarbigen
+     Grund, hat backdrop-filter nichts zum Durchscheinen, kostet aber
+     weiter Leistung. Statt in jeder Anwendung eigene Ueberschreibungen zu
+     bauen, wird hier zentral die Ursache umgestellt. Die Komponenten
+     bleiben unveraendert, sie lesen ohnehin nur diese Tokens.
+     ============================================================ */
+
+  /* Glas aus: keine Unschaerfe, deckende Flaechen, keine Koernung. */
+  [data-glass="off"] {
+    --glass-blur:        0px;
+    --glass-blur-strong: 0px;
+    --glass-tint:        var(--color-surface);
+    --glass-tint-strong: var(--color-surface);
+    --glass-tint-sunken: var(--color-surface-2);
+    --glass-noise-opacity: 0;
+  }
+
+  /* Verlaeufe aus: jede Flaeche zeigt nur noch ihre Grundfarbe. Deshalb
+     muss jede Komponente mit Verlauf zusaetzlich eine background-color
+     tragen, sonst bliebe sie farblos. */
+  [data-gradients="off"] {
+    --gradient-accent: none;
+    --gradient-warm:   none;
+    --gradient-cool:   none;
+
+    --tone-azure-grad:  none;
+    --tone-indigo-grad: none;
+    --tone-amber-grad:  none;
+    --tone-jade-grad:   none;
+    --tone-rose-grad:   none;
+    --tone-slate-grad:  none;
+  }
+
+
+  /* ============================================================
+     Bewegung abschalten, wenn das System es verlangt.
+     Zentral ueber die Dauer-Tokens: jede Komponente, die
+     --dur-* benutzt, haelt sich damit automatisch daran.
+     ============================================================ */
+  @media (prefers-reduced-motion: reduce) {
+    :root {
+      --dur-fast: 1ms;
+      --dur-med:  1ms;
+      --dur-slow: 1ms;
+    }
   }
 }

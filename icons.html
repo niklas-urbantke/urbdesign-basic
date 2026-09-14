@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de" data-theme="light">
+<html lang="de">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,192 +9,381 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
+  <!-- Reihenfolge der Kaskadenschichten. Muss VOR den Stylesheets stehen,
+       sonst entscheidet die Ladereihenfolge statt der Absicht. -->
+  <style>@layer tokens, base, components, showcase;</style>
+
   <link rel="stylesheet" href="tokens.css">
   <link rel="stylesheet" href="components.css">
-  <link rel="stylesheet" href="showcase.css">
   <link rel="stylesheet" href="icons.css">
+
+  <!-- Ohne defer: das Theme steht, bevor das erste Bild gezeichnet wird. -->
+  <script src="theme.js"></script>
 </head>
 <body>
 
-  <header class="topbar glass">
-    <div class="topbar__brand">
-      <span class="brand-mark" aria-hidden="true"></span>
+  <!-- Hierhin haengt das Skript das Sprite. Es muss im selben Dokument
+       liegen, sonst greifen weder <use href="#name"> noch die Verlaeufe. -->
+  <div class="ic-sprite" id="ic-sprite" aria-hidden="true"></div>
+
+  <header class="ic-topbar glass">
+    <div class="ic-topbar__brand">
+      <span class="icon-tile icon-tile--azure" aria-hidden="true">
+        <svg class="icon"><use href="#grid"></use></svg>
+      </span>
       urbDesign Icons
     </div>
-    <div class="topbar__actions">
-      <span class="badge badge--accent" id="total-badge">0 Icons</span>
-      <button class="btn" data-theme-toggle>Dunkel</button>
+    <div class="ic-topbar__actions">
+      <span class="badge badge--accent" id="ic-total">Icons werden geladen</span>
+      <button class="btn btn--glass" type="button" data-theme-toggle></button>
     </div>
   </header>
 
-  <main class="page">
+  <main class="container ic-page">
 
-    <section class="hero">
+    <section class="ic-hero">
       <h1>Icon-Baukasten</h1>
       <p>
-        Einfarbige Linien-Icons im modernen, schlichten Stil. Alle nutzen
-        <code>currentColor</code>, sind also nicht fest eingefärbt – die Farbe
-        bestimmt das Design-System per <code>color</code> bzw. <code>var(--color-*)</code>.
-        Klick auf ein Icon kopiert den Einbau-Schnipsel.
+        Linien-Icons im Aero-Plasma-Stil, 24×24, farbfähig. Der Strich hängt an
+        <code>--icon-stroke</code>, die Fläche an <code>--icon-fill</code>. Damit
+        lässt sich dasselbe Sprite einfarbig, getönt, als Duotone, mit
+        Verlaufsstrich oder in einer Glaskachel zeigen. Jedes Symbol bringt seinen
+        Markenton als <code>data-tone</code> mit. Ein Klick kopiert das passende
+        Schnipsel.
       </p>
     </section>
 
-    <!-- Ladefehler-Hinweis (nur wenn Sprite nicht geladen werden konnte) -->
-    <div class="alert alert--warning load-note" id="load-note">
+    <!-- Nur sichtbar, wenn das Sprite nicht geladen werden konnte.
+         Das Icon zeigt hier auf die externe Datei, weil das Sprite in
+         genau diesem Fall nicht im Dokument steht. -->
+    <div class="alert alert--warning ic-note" id="ic-load-note" hidden>
       <span class="alert__icon">
-        <svg class="icon" style="--icon-size:20px"><use href="icons.svg#alert-triangle"></use></svg>
+        <svg class="icon" aria-hidden="true"><use href="icons.svg#alert-triangle"></use></svg>
       </span>
       <div>
         <div class="alert__title">Icons konnten nicht geladen werden</div>
-        <p>Diese Seite lädt <code>icons.svg</code> per Skript. Beim direkten Öffnen als
-        Datei blockieren manche Browser das. Bitte über einen lokalen Server öffnen,
-        z. B. <code>python -m http.server</code> im Ordner.</p>
+        <p>
+          Diese Seite holt <code>icons.svg</code> per Skript. Beim direkten Öffnen
+          als Datei blockieren das viele Browser. Bitte über einen lokalen Server
+          aufrufen, zum Beispiel <code>python3 -m http.server</code> im Projektordner.
+        </p>
       </div>
     </div>
 
-    <div class="controls glass">
-      <div class="field search">
-        <input class="input" id="icon-search" type="search" placeholder="Icon suchen … (z. B. pfeil, lock, plus)">
+    <div class="ic-controls glass">
+      <div class="field ic-controls__search">
+        <input class="input" id="ic-search" type="search" autocomplete="off"
+               aria-label="Icons durchsuchen"
+               placeholder="Suchen … (Name, Kategorie oder Ton)">
       </div>
-      <label class="ctrl">Größe
-        <input class="range" id="size" type="range" min="16" max="48" step="2" value="24" style="width:120px">
-        <span id="size-val" style="font-family:var(--font-mono);width:2.5rem">24px</span>
+
+      <div class="segmented" id="ic-modes" role="group" aria-label="Darstellungsart">
+        <button class="segmented__item is-active" type="button" data-mode="mono"  aria-pressed="true">Einfarbig</button>
+        <button class="segmented__item" type="button" data-mode="color" aria-pressed="false">Bunt</button>
+        <button class="segmented__item" type="button" data-mode="duo"   aria-pressed="false">Duotone</button>
+        <button class="segmented__item" type="button" data-mode="grad"  aria-pressed="false">Verlauf</button>
+        <button class="segmented__item" type="button" data-mode="tile"  aria-pressed="false">Kachel</button>
+      </div>
+
+      <label class="ic-ctrl" for="ic-size">
+        Größe
+        <input class="range" id="ic-size" type="range" min="16" max="48" step="2" value="24">
+        <span class="ic-ctrl__value" id="ic-size-val">24px</span>
       </label>
-      <span class="count" id="count"></span>
+
+      <span class="ic-count" id="ic-count" aria-live="polite"></span>
     </div>
 
-    <div id="grid-root"></div>
-    <p class="empty" id="empty" hidden>Keine Treffer.</p>
+    <div class="ic-filters" id="ic-filters" role="group" aria-label="Nach Kategorie filtern"></div>
 
-    <footer class="page-footer">
-      urbDesign Icons · einfarbig (currentColor) · Sprite: <code>icons.svg</code>
+    <p class="ic-hint" id="ic-hint">
+      Ein Klick auf ein Icon legt dieses Schnipsel in die Zwischenablage,
+      mit echtem Namen und echtem Ton:
+    </p>
+    <code class="code-block ic-snippet" id="ic-snippet"></code>
+
+    <div id="ic-grid-root"></div>
+
+    <div class="empty ic-note" id="ic-empty" hidden>
+      <span class="empty__icon" aria-hidden="true">
+        <svg class="icon icon--xl"><use href="#search"></use></svg>
+      </span>
+      <p class="empty__title">Keine Treffer</p>
+      <p>Andere Suche oder Kategorie „Alle“ wählen.</p>
+    </div>
+
+    <footer class="ic-footer">
+      urbDesign Icons · Quelle: <code>icons.svg</code> · Verläufe und
+      <code>&lt;use&gt;</code> funktionieren nur, wenn das Sprite inline im
+      Dokument liegt.
     </footer>
   </main>
 
-  <!-- Container, in den das Sprite injiziert wird -->
-  <div id="sprite-host" hidden aria-hidden="true"></div>
+  <!-- Rueckmeldung beim Kopieren -->
+  <div class="toast-stack" id="ic-toasts" aria-live="polite"></div>
 
-  <div class="toast" id="toast" role="status"></div>
-
-  <script src="theme.js"></script>
   <script>
-    // Theme-Toggle-Label an dieser Seite ohne Emoji halten
     (function () {
-      const btn = document.querySelector("[data-theme-toggle]");
-      const sync = () => { btn.textContent = document.documentElement.getAttribute("data-theme") === "dark" ? "Hell" : "Dunkel"; };
-      new MutationObserver(sync).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
-      sync();
-    })();
+      "use strict";
 
-    // Sprite laden, Raster aufbauen
-    (async function () {
-      const host = document.getElementById("sprite-host");
-      const root = document.getElementById("grid-root");
-      const note = document.getElementById("load-note");
+      /* ------------------------------------------------------------------
+         Darstellungsarten. Jede baut aus Name und Ton ein anderes Schnipsel.
+         Fuer slate gibt es keinen eigenen Verlauf im Sprite, dort greift der
+         Hausverlauf (Azure nach Indigo).
+         ------------------------------------------------------------------ */
+      var GRAD = {
+        azure: "azure", indigo: "indigo", amber: "amber",
+        jade: "jade", rose: "rose", slate: "accent"
+      };
 
-      let text;
-      try {
-        const res = await fetch("icons.svg");
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        text = await res.text();
-      } catch (e) {
-        note.classList.add("is-visible");
-        return;
+      function markup(name, tone, mode) {
+        var use = '<use href="#' + name + '"></use>';
+        // Unbekannte Toene bleiben stehen, damit die Vorschau mit dem
+        // Platzhalter TON lesbar bleibt.
+        var grad = GRAD[tone] || tone;
+        if (mode === "color") return '<svg class="icon icon--' + tone + '" aria-hidden="true">' + use + '</svg>';
+        if (mode === "duo")   return '<svg class="icon icon--duo icon--' + tone + '" aria-hidden="true">' + use + '</svg>';
+        if (mode === "grad")  return '<svg class="icon icon--grad-' + grad + '" aria-hidden="true">' + use + '</svg>';
+        if (mode === "tile")  return '<span class="icon-tile icon-tile--' + tone + '">' +
+                                     '<svg class="icon" aria-hidden="true">' + use + '</svg></span>';
+        return '<svg class="icon" aria-hidden="true">' + use + '</svg>';
       }
 
-      // XML-Prolog entfernen, damit innerHTML sauber parst
-      host.innerHTML = text.replace(/<\?xml[^>]*\?>/, "");
+      var state = { mode: "mono", cat: "", query: "" };
+      var sections = [];
 
-      const symbols = Array.from(host.querySelectorAll("symbol"));
-      document.getElementById("total-badge").textContent = symbols.length + " Icons";
+      var host      = document.getElementById("ic-sprite");
+      var gridRoot  = document.getElementById("ic-grid-root");
+      var note      = document.getElementById("ic-load-note");
+      var search    = document.getElementById("ic-search");
+      var modes     = document.getElementById("ic-modes");
+      var filters   = document.getElementById("ic-filters");
+      var sizeInput = document.getElementById("ic-size");
+      var sizeVal   = document.getElementById("ic-size-val");
+      var countEl   = document.getElementById("ic-count");
+      var emptyEl   = document.getElementById("ic-empty");
+      var snippetEl = document.getElementById("ic-snippet");
+      var totalEl   = document.getElementById("ic-total");
+      var toasts    = document.getElementById("ic-toasts");
 
-      // Nach Kategorie gruppieren
-      const cats = {};
-      symbols.forEach((s) => {
-        const cat = s.getAttribute("data-cat") || "Sonstige";
-        (cats[cat] = cats[cat] || []).push(s.id);
-      });
+      /* ---------- Groesse ----------
+         Der Regler setzt --icon-size am Raster (vererbt sich auf die
+         Kacheln) und zusaetzlich an jedem Icon selbst. Das zweite ist
+         Absicherung: setzt .icon die Variable in der eigenen Regel, kaeme
+         der geerbte Wert sonst nie an. */
+      function applySize() {
+        var px = sizeInput.value + "px";
+        gridRoot.style.setProperty("--icon-size", px);
+        var list = gridRoot.querySelectorAll("svg.icon");
+        for (var i = 0; i < list.length; i++) list[i].style.setProperty("--icon-size", px);
+        sizeVal.textContent = px;
+      }
 
-      // Raster rendern
-      const frag = document.createDocumentFragment();
-      Object.keys(cats).forEach((cat) => {
-        const sec = document.createElement("section");
-        sec.className = "cat";
-        sec.dataset.cat = cat;
+      /* ---------- Vorschau des Schnipsels ---------- */
+      function paintSnippet() {
+        snippetEl.textContent = markup("NAME", "TON", state.mode);
+      }
 
-        const h = document.createElement("h2");
-        h.innerHTML = cat + ' <span class="cat-count">' + cats[cat].length + "</span>";
-        sec.appendChild(h);
+      /* ---------- Zellen neu zeichnen ---------- */
+      function paintCells() {
+        var cells = gridRoot.querySelectorAll(".ic-cell");
+        for (var i = 0; i < cells.length; i++) {
+          var cell = cells[i];
+          cell.querySelector(".ic-cell__art").innerHTML =
+            markup(cell.dataset.name, cell.dataset.tone, state.mode);
+        }
+        applySize();
+      }
 
-        const grid = document.createElement("div");
-        grid.className = "icon-grid";
-        cats[cat].forEach((id) => {
-          const tile = document.createElement("button");
-          tile.className = "icon-tile";
-          tile.dataset.name = id;
-          tile.title = "Klicken zum Kopieren";
-          // Anzeige ueber das injizierte lokale Symbol (zuverlaessig),
-          // der Kopier-Schnipsel verweist auf die externe Sprite-Datei.
-          tile.innerHTML =
-            '<svg class="icon"><use href="#' + id + '"></use></svg>' +
-            '<span class="name">' + id + "</span>";
-          grid.appendChild(tile);
+      /* ---------- Filtern ---------- */
+      function applyFilter() {
+        var q = state.query;
+        var visible = 0;
+
+        sections.forEach(function (sec) {
+          var hits = 0;
+          sec.cells.forEach(function (cell) {
+            var inCat = !state.cat || sec.name === state.cat;
+            var inText = !q ||
+              cell.dataset.name.indexOf(q) > -1 ||
+              sec.name.toLowerCase().indexOf(q) > -1 ||
+              cell.dataset.tone.indexOf(q) > -1;
+            var hit = inCat && inText;
+            cell.hidden = !hit;
+            if (hit) hits++;
+          });
+          sec.el.hidden = hits === 0;
+          sec.countEl.textContent = hits;
+          visible += hits;
         });
-        sec.appendChild(grid);
-        frag.appendChild(sec);
-      });
-      root.appendChild(frag);
 
-      updateCount();
+        countEl.textContent = visible + " sichtbar";
+        emptyEl.hidden = visible > 0;
+      }
+
+      /* ---------- Kopieren ---------- */
+      function copyText(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+          return navigator.clipboard.writeText(text);
+        }
+        // Fallback fuer file:// und aeltere Browser.
+        var ta = document.createElement("textarea");
+        ta.value = text;
+        ta.setAttribute("readonly", "");
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand("copy"); } catch (e) { /* still */ }
+        ta.remove();
+        return Promise.resolve();
+      }
+
+      function toast(text, ok) {
+        var el = document.createElement("div");
+        el.className = "toast" + (ok ? " toast--success" : " toast--danger");
+        el.setAttribute("role", "status");
+        el.textContent = text;
+        toasts.appendChild(el);
+        setTimeout(function () { el.remove(); }, 2400);
+      }
+
+      /* ---------- Sprite holen und Seite aufbauen ---------- */
+      (async function build() {
+        var text;
+        try {
+          var res = await fetch("icons.svg");
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          text = await res.text();
+        } catch (e) {
+          note.hidden = false;
+          totalEl.textContent = "kein Sprite";
+          return;
+        }
+
+        // XML-Prolog entfernen, damit innerHTML sauber parst.
+        host.innerHTML = text.replace(/<\?xml[^>]*\?>/, "");
+
+        // Icons, die schon vor dem Sprite im DOM standen (Kopfleiste,
+        // Theme-Schalter), muessen ihr <use> neu aufloesen.
+        var early = document.querySelectorAll("header svg.icon, .empty svg.icon");
+        for (var e = 0; e < early.length; e++) early[e].innerHTML = early[e].innerHTML;
+
+        var symbols = Array.prototype.slice.call(host.querySelectorAll("symbol"));
+        totalEl.textContent = symbols.length + " Icons";
+
+        // Nach Kategorie gruppieren, Reihenfolge aus dem Sprite behalten.
+        var order = [];
+        var byCat = {};
+        symbols.forEach(function (s) {
+          var cat = s.getAttribute("data-cat") || "Sonstige";
+          if (!byCat[cat]) { byCat[cat] = []; order.push(cat); }
+          byCat[cat].push({ name: s.id, tone: s.getAttribute("data-tone") || "slate" });
+        });
+
+        // Filter-Chips
+        var chips = [{ label: "Alle", cat: "" }].concat(order.map(function (c) {
+          return { label: c, cat: c };
+        }));
+        chips.forEach(function (c, i) {
+          var b = document.createElement("button");
+          b.type = "button";
+          b.className = "chip" + (i === 0 ? " is-selected" : "");
+          b.dataset.cat = c.cat;
+          b.setAttribute("aria-pressed", i === 0 ? "true" : "false");
+          b.textContent = c.label;
+          filters.appendChild(b);
+        });
+
+        // Raster
+        var frag = document.createDocumentFragment();
+        order.forEach(function (cat) {
+          var sec = document.createElement("section");
+          sec.className = "ic-cat";
+
+          var head = document.createElement("h2");
+          head.className = "ic-cat__head";
+          head.textContent = cat;
+          var count = document.createElement("span");
+          count.className = "ic-cat__count";
+          count.textContent = byCat[cat].length;
+          head.appendChild(count);
+          sec.appendChild(head);
+
+          var grid = document.createElement("div");
+          grid.className = "ic-grid";
+          var cells = [];
+          byCat[cat].forEach(function (item) {
+            var cell = document.createElement("button");
+            cell.type = "button";
+            cell.className = "ic-cell card card--glass";
+            cell.dataset.name = item.name;
+            cell.dataset.tone = item.tone;
+            cell.title = "Schnipsel kopieren";
+            cell.setAttribute("aria-label", item.name + " kopieren");
+            cell.innerHTML =
+              '<span class="ic-cell__art"></span>' +
+              '<span class="ic-cell__name">' + item.name + "</span>";
+            grid.appendChild(cell);
+            cells.push(cell);
+          });
+          sec.appendChild(grid);
+          frag.appendChild(sec);
+
+          sections.push({ name: cat, el: sec, countEl: count, cells: cells });
+        });
+        gridRoot.appendChild(frag);
+
+        paintCells();
+        paintSnippet();
+        applyFilter();
+      })();
+
+      /* ---------- Bedienung ---------- */
+      sizeInput.addEventListener("input", applySize);
+
+      search.addEventListener("input", function () {
+        state.query = search.value.trim().toLowerCase();
+        applyFilter();
+      });
+
+      modes.addEventListener("click", function (e) {
+        var btn = e.target.closest(".segmented__item");
+        if (!btn) return;
+        state.mode = btn.dataset.mode;
+        var items = modes.querySelectorAll(".segmented__item");
+        for (var i = 0; i < items.length; i++) {
+          var on = items[i] === btn;
+          items[i].classList.toggle("is-active", on);
+          items[i].setAttribute("aria-pressed", on ? "true" : "false");
+        }
+        paintCells();
+        paintSnippet();
+      });
+
+      filters.addEventListener("click", function (e) {
+        var chip = e.target.closest(".chip");
+        if (!chip) return;
+        state.cat = chip.dataset.cat;
+        var all = filters.querySelectorAll(".chip");
+        for (var i = 0; i < all.length; i++) {
+          var on = all[i] === chip;
+          all[i].classList.toggle("is-selected", on);
+          all[i].setAttribute("aria-pressed", on ? "true" : "false");
+        }
+        applyFilter();
+      });
+
+      gridRoot.addEventListener("click", function (e) {
+        var cell = e.target.closest(".ic-cell");
+        if (!cell) return;
+        var snippet = markup(cell.dataset.name, cell.dataset.tone, state.mode);
+        copyText(snippet).then(
+          function () { toast("Kopiert: " + cell.dataset.name, true); },
+          function () { toast("Kopieren nicht möglich", false); }
+        );
+      });
     })();
-
-    // Groesse steuern
-    const sizeInput = document.getElementById("size");
-    const sizeVal = document.getElementById("size-val");
-    function applySize() {
-      document.documentElement.style.setProperty("--icon-size", sizeInput.value + "px");
-      sizeVal.textContent = sizeInput.value + "px";
-    }
-    sizeInput.addEventListener("input", applySize);
-    applySize();
-
-    // Suche
-    const search = document.getElementById("icon-search");
-    const empty = document.getElementById("empty");
-    function updateCount() {
-      const visible = document.querySelectorAll(".icon-tile:not([hidden])").length;
-      document.getElementById("count").textContent = visible + " sichtbar";
-    }
-    search.addEventListener("input", function () {
-      const q = search.value.trim().toLowerCase();
-      let anyVisible = false;
-      document.querySelectorAll(".cat").forEach((sec) => {
-        let catVisible = 0;
-        sec.querySelectorAll(".icon-tile").forEach((t) => {
-          const hit = t.dataset.name.includes(q) || sec.dataset.cat.toLowerCase().includes(q);
-          t.hidden = !hit;
-          if (hit) catVisible++;
-        });
-        sec.hidden = catVisible === 0;
-        if (catVisible) anyVisible = true;
-      });
-      empty.hidden = anyVisible;
-      updateCount();
-    });
-
-    // Klick kopiert den Einbau-Schnipsel
-    const toast = document.getElementById("toast");
-    let toastTimer;
-    document.addEventListener("click", function (e) {
-      const tile = e.target.closest(".icon-tile");
-      if (!tile) return;
-      const snippet = '<svg class="icon"><use href="icons.svg#' + tile.dataset.name + '"></use></svg>';
-      navigator.clipboard && navigator.clipboard.writeText(snippet);
-      toast.textContent = "Kopiert: " + tile.dataset.name;
-      toast.classList.add("is-visible");
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => toast.classList.remove("is-visible"), 1600);
-    });
   </script>
 </body>
 </html>

@@ -1,0 +1,3 @@
+{ "version": "0.0.1", "configurations": [
+  { "name": "vorschau", "runtimeExecutable": "python3", "runtimeArgs": ["/private/tmp/claude-502/-Users-thorben-Documents-Niklas-Projects-urbdesign-basic/86dc3ab9-d61d-4614-845f-ee246c9e663d/scratchpad/server.py"], "port": 8360 },
+  { "name": "urbdesign", "runtimeExecutable": "python3", "runtimeArgs": ["-m", "http.server", "8347"], "port": 8347 } ] }

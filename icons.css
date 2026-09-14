@@ -1,81 +1,242 @@
 /* ============================================================
-   Icon-Uebersicht (Showcase)
-   Nutzt die Tokens aus tokens.css. Icons sind einfarbig
-   (currentColor) und werden ueber color / var(--color-*) gefaerbt.
+   urbDesign Icons – Layout der Uebersichtsseite (icons.html)
+
+   Diese Datei baut KEINE Komponenten nach. Alles Sichtbare kommt
+   aus components.css: .glass, .btn, .input, .chip, .segmented,
+   .card, .badge, .toast, .icon und .icon-tile. Hier steht nur,
+   wie diese Bauteile auf der Seite angeordnet sind.
+
+   Zwei Regeln:
+     1. Nur semantische Tokens. Kein --urb-*, kein roher Farbwert.
+     2. Eigene Klassen tragen das Praefix ic-, damit sie mit dem
+        System nicht kollidieren. Insbesondere ist .icon-tile die
+        Glaskachel aus components.css und NICHT die Rasterzelle,
+        die heisst .ic-cell.
    ============================================================ */
 
 @layer showcase {
 
-  /* Basisklasse .icon liegt in components.css (dort geladen). */
+  /* ---------- Sprite-Ablage ----------
+     Das per fetch geholte Sprite haengt hier drin. Bewusst nicht
+     display:none: Verlaeufe (url(#urb-grad-azure)) muessen als
+     Paint-Server aufloesbar bleiben. */
+  .ic-sprite {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+  }
 
-  /* Steuerleiste */
-  .controls {
-    display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4);
-    padding: var(--space-4);
+  /* ---------- Kopfleiste ---------- */
+  .ic-topbar {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-3) var(--space-5);
     margin-bottom: var(--space-8);
+    border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+  }
+  .ic-topbar__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-tight);
+  }
+  .ic-topbar__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  /* ---------- Seitenrhythmus ---------- */
+  .ic-page {
+    padding-bottom: var(--space-16);
+  }
+  .ic-hero {
+    max-width: 62ch;
+    margin-bottom: var(--space-8);
+  }
+  .ic-hero h1 {
+    font-size: var(--text-3xl);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
+    margin-bottom: var(--space-3);
+  }
+  .ic-hero p {
+    color: var(--color-text-secondary);
+    line-height: var(--leading-normal);
+  }
+
+  /* ---------- Steuerleiste ---------- */
+  .ic-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4);
     border-radius: var(--radius-lg);
+    margin-bottom: var(--space-4);
   }
-  .controls .search { flex: 1 1 220px; }
-  .controls .ctrl { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-sm); color: var(--color-text-secondary); }
-  .controls .count { margin-left: auto; font-size: var(--text-sm); color: var(--color-text-muted); font-family: var(--font-mono); }
-
-  /* Kategorie */
-  .cat { margin-top: var(--space-10); }
-  .cat > h2 {
-    font-size: var(--text-lg); margin-bottom: var(--space-4);
-    display: flex; align-items: center; gap: var(--space-3);
+  .ic-controls__search {
+    flex: 1 1 16rem;
+    min-width: 12rem;
   }
-  .cat > h2::before { content: ""; width: 4px; height: 1.1em; background: var(--color-accent); border-radius: var(--radius-full); }
-  .cat > h2 .cat-count { font-size: var(--text-sm); color: var(--color-text-muted); font-weight: var(--font-normal); font-family: var(--font-mono); }
-
-  /* Raster */
-  .icon-grid { display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
-
-  .icon-tile {
-    display: flex; flex-direction: column; align-items: center; gap: var(--space-3);
-    padding: var(--space-4) var(--space-3);
-    background: var(--color-surface);
-    border: var(--border-thin) solid var(--color-border);
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    color: var(--color-text);
-    transition: border-color var(--dur-fast) var(--ease),
-                background var(--dur-fast) var(--ease),
-                color var(--dur-fast) var(--ease),
-                transform var(--dur-fast) var(--ease);
-    text-align: center;
+  .ic-ctrl {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    white-space: nowrap;
   }
-  .icon-tile:hover {
-    border-color: var(--color-accent);
-    color: var(--color-accent);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-  }
-  .icon-tile:active { transform: translateY(0); }
-  .icon-tile .name {
-    font-family: var(--font-mono); font-size: 11px;
+  .ic-ctrl .range { width: 8rem; }
+  .ic-ctrl__value {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
     color: var(--color-text-muted);
-    word-break: break-all; line-height: 1.3;
+    width: 3rem;
   }
-  .icon-tile:hover .name { color: var(--color-text-secondary); }
-
-  /* Kein-Treffer-Hinweis */
-  .empty { color: var(--color-text-muted); font-size: var(--text-sm); padding: var(--space-8) 0; text-align: center; }
-  .empty[hidden] { display: none; }
-
-  /* Toast bei Kopieren */
-  .toast {
-    position: fixed; bottom: var(--space-6); left: 50%; transform: translateX(-50%) translateY(1rem);
-    padding: var(--space-2) var(--space-4);
-    background: var(--color-text); color: var(--color-text-inverted);
-    border-radius: var(--radius-md); font-size: var(--text-sm);
-    box-shadow: var(--shadow-lg);
-    opacity: 0; pointer-events: none;
-    transition: opacity var(--dur-med) var(--ease), transform var(--dur-med) var(--ease);
+  .ic-count {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    white-space: nowrap;
   }
-  .toast.is-visible { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  /* Ladefehler-Hinweis (z. B. beim Oeffnen ohne lokalen Server) */
-  .load-note { display: none; }
-  .load-note.is-visible { display: block; }
+  /* ---------- Filterreihe ---------- */
+  .ic-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+  }
+  /* Nur der gewaehlte Zustand, ergaenzend zu .chip aus components.css.
+     Falls dort schon etwas fuer .is-selected steht, legt sich das hier
+     lediglich darueber, es wird nichts nachgebaut. */
+  .ic-filters .chip {
+    cursor: pointer;
+    font: inherit;
+    font-size: var(--text-sm);
+  }
+  .ic-filters .chip.is-selected {
+    color: var(--color-accent);
+    border-color: var(--color-accent-line);
+    background-color: var(--color-accent-soft);
+  }
+
+  /* ---------- Schnipsel-Vorschau ---------- */
+  .ic-hint {
+    margin-bottom: var(--space-2);
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+  }
+  .ic-snippet {
+    display: block;
+    overflow-x: auto;
+    margin-bottom: var(--space-8);
+    font-size: var(--text-xs);
+  }
+
+  /* ---------- Kategorie-Abschnitt ---------- */
+  .ic-cat { margin-top: var(--space-10); }
+  .ic-cat[hidden] { display: none; }
+  .ic-cat__head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-4);
+  }
+  .ic-cat__head::before {
+    content: "";
+    width: var(--space-1);
+    height: 1.1em;
+    border-radius: var(--radius-full);
+    background-image: var(--gradient-accent);
+  }
+  .ic-cat__count {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    font-weight: var(--font-normal);
+    color: var(--color-text-muted);
+  }
+
+  /* ---------- Raster ----------
+     Die Spaltenbreite waechst mit der eingestellten Icon-Groesse mit. */
+  .ic-grid {
+    display: grid;
+    gap: var(--space-3);
+    grid-template-columns: repeat(auto-fill, minmax(calc(var(--icon-size, 1.25rem) + 5.5rem), 1fr));
+  }
+
+  /* ---------- Rasterzelle ----------
+     Traegt zusaetzlich .card und .card--glass, ist also eine echte
+     Karte des Systems. Hier nur Innenanordnung und Klickverhalten. */
+  .ic-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    min-height: calc(var(--icon-size, 1.25rem) + 5rem);
+    padding: var(--space-4) var(--space-2);
+    font: inherit;
+    color: var(--color-text);
+    text-align: center;
+    cursor: pointer;
+    transition: transform var(--dur-fast) var(--ease),
+                box-shadow var(--dur-fast) var(--ease);
+  }
+  .ic-cell[hidden] { display: none; }
+  .ic-cell:hover { transform: translateY(-2px); box-shadow: var(--shadow-glow); }
+  .ic-cell:active { transform: translateY(0); }
+
+  /* Bildflaeche der Zelle: haelt die Hoehe konstant, egal ob nur ein
+     Icon oder eine ganze Glaskachel darin steckt. */
+  .ic-cell__art {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(var(--icon-size, 1.25rem) + var(--space-6));
+  }
+  /* Die Kachel im Kachel-Modus folgt dem Groessenregler mit. */
+  .ic-cell__art .icon-tile {
+    width: calc(var(--icon-size, 1.25rem) + var(--space-6));
+    height: calc(var(--icon-size, 1.25rem) + var(--space-6));
+  }
+  .ic-cell__name {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: var(--leading-tight);
+    color: var(--color-text-muted);
+    word-break: break-word;
+  }
+  .ic-cell:hover .ic-cell__name { color: var(--color-text-secondary); }
+
+  /* ---------- Hinweise ---------- */
+  .ic-note { margin-bottom: var(--space-6); }
+  .ic-note[hidden] { display: none; }
+
+  .ic-footer {
+    margin-top: var(--space-16);
+    padding-top: var(--space-6);
+    border-top: var(--border-thin) solid var(--color-border);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+  }
+
+  /* ---------- Schmale Fenster ---------- */
+  @media (max-width: 40rem) {
+    .ic-count { margin-left: 0; }
+    .ic-controls__search { flex-basis: 100%; }
+  }
 }
